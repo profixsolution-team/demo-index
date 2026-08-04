@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>สรุปงานช่าง — ProFix</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2358a6ff'/><text x='50' y='72' font-size='60' font-family='Arial' font-weight='bold' fill='%230d1117' text-anchor='middle'>P</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1f2937;--surface3:#273344;--border:#30363d;--border2:#3d4754;--accent:#58a6ff;--accent-dim:#1a3a5c;--green:#3fb950;--green-dim:#1a3a1f;--yellow:#d29922;--yellow-dim:#3a2a0a;--red:#f85149;--red-dim:#3a0f0f;--text:#e6edf3;--text2:#8b949e;--text3:#6e7681;--mono:"IBM Plex Mono",monospace;--sans:"Noto Sans Thai",sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;min-height:100vh;padding-bottom:40px;}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;}
+.logo-badge{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#0d1117;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--mono);}
+.logo-txt{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--accent);letter-spacing:1px;}
+.logo-sub{font-size:11px;color:var(--text3);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:16px;}
+.job-head{background:linear-gradient(135deg,#1a2a3a,#161b22);border:1px solid var(--accent-dim);}
+.job-id{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent);}
+.job-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.meta-item{}
+.meta-label{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.meta-val{font-size:14px;font-weight:600;}
+.chip{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-family:var(--mono);background:var(--surface3);color:var(--text2);}
+.sec-title{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.sec-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--sans);font-size:15px;outline:none;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:80px;}
+.form-group{margin-bottom:16px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 20px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:var(--sans);transition:all .15s;width:100%;}
+.btn-primary{background:var(--accent);color:#0d1117;}
+.btn-primary:active{transform:scale(.98);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+/* UPLOAD */
+.up-group{margin-bottom:18px;}
+.up-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.up-label{font-weight:700;font-size:14px;display:flex;align-items:center;gap:8px;}
+.up-count{font-size:12px;color:var(--text2);font-family:var(--mono);}
+.up-zone{border:2px dashed var(--border2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);}
+.up-zone:active{border-color:var(--accent);background:var(--accent-dim);}
+.up-icon{font-size:28px;margin-bottom:6px;}
+.up-hint{font-size:12px;color:var(--text2);}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,72px);gap:8px;margin-top:10px;justify-content:start;}
+.thumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2);}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb .rm{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.thumb .pct{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-family:var(--mono);}
+@media (min-width:480px){.thumbs{grid-template-columns:repeat(auto-fill,84px);}.thumb{width:84px;height:84px;}}
+.color-before{color:#79b8ff;}.color-during{color:#d29922;}.color-after{color:#3fb950;}.color-documents{color:#a5b4fc;}
+.badge-st{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--mono);}
+.st-open{background:var(--accent-dim);color:var(--accent);}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#0d1117;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,17,23,.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;text-align:center;}
+.overlay.show{display:flex;}
+.big-spin{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+.success-ic{width:72px;height:72px;border-radius:50%;background:var(--green-dim);border:2px solid var(--green);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:38px;}
+.msg-box{padding:40px 20px;text-align:center;}
+.msg-box .ic{font-size:48px;margin-bottom:14px;}
+.hidden{display:none!important;}
+.req-star{color:var(--red);}
+.step-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface3);color:var(--text2);font-family:var(--mono);font-size:11px;font-weight:700;margin-bottom:10px;}
+.parts-editor{display:flex;flex-direction:column;gap:8px;}
+.part-row{display:grid;grid-template-columns:minmax(0,1fr) 82px 82px 36px;gap:6px;align-items:start;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:8px;}
+.part-row input{padding:9px 10px;font-size:14px;}
+.part-row .rm-part{width:36px;height:38px;border:0;border-radius:8px;background:var(--red-dim);color:var(--red);font-size:18px;font-weight:800;cursor:pointer;}
+.part-tools{display:flex;gap:8px;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;}
+.part-add{width:auto;padding:9px 12px;border-radius:8px;background:var(--surface3);color:var(--text);border:1px solid var(--border);font-weight:700;cursor:pointer;}
+.part-hint{font-size:11px;color:var(--text3);line-height:1.45;}
+@media(max-width:430px){.part-row{grid-template-columns:1fr 70px 70px 34px;gap:5px;padding:7px;}.part-row input{font-size:13px;padding:9px 8px;}}
+.part-name-wrap{position:relative;min-width:0;}
+.part-dd{position:absolute;left:0;right:0;top:calc(100% + 3px);z-index:60;max-height:240px;overflow-y:auto;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;box-shadow:0 10px 26px rgba(0,0,0,.45);}
+.part-dd-row{padding:9px 11px;cursor:pointer;border-bottom:1px solid var(--border);}
+.part-dd-row:last-child{border-bottom:0;}
+.part-dd-row:active{background:var(--surface3);}
+.part-dd-name{font-size:14px;color:var(--text);}
+.part-dd-sub{font-size:11px;color:var(--text3);margin-top:1px;}
+.part-dd-empty{padding:11px;font-size:12px;color:var(--text3);text-align:center;line-height:1.5;}
+.part-custom-tag{display:inline-block;font-size:10px;color:var(--yellow);background:var(--yellow-dim);border-radius:4px;padding:1px 7px;margin-top:5px;}
+.part-add.alt{background:var(--yellow-dim);color:var(--yellow);border-color:var(--yellow);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo-badge">P</div>
+  <div><div class="logo-txt">PROFIX</div><div class="logo-sub">ฟอร์มสรุปงานช่าง</div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- LOADING STATE -->
+  <div id="state-loading" class="msg-box">
+    <div class="big-spin" style="margin:0 auto 16px;"></div>
+    <div style="color:var(--text2);">กำลังโหลดข้อมูลงาน...</div>
+  </div>
+
+  <!-- ERROR STATE -->
+  <div id="state-error" class="msg-box hidden">
+    <div class="ic">⚠️</div>
+    <div style="font-weight:700;font-size:18px;margin-bottom:8px;" id="error-title">ไม่พบงานนี้</div>
+    <div style="color:var(--text2);font-size:14px;" id="error-msg">ลิงก์อาจไม่ถูกต้อง หรือหมดอายุแล้ว กรุณาติดต่อแอดมิน</div>
+    <div style="margin-top:16px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-primary" onclick="retryLoadJob()" style="width:auto;padding:0 16px;">🔄 ลองอีกครั้ง</button>
+      <input id="manual-job" placeholder="กรอก PR เช่น PR-001" onkeydown="if(event.key==='Enter')openManualJob()" style="width:min(100%,220px);height:44px;border:1px solid var(--border);border-radius:10px;background:var(--card);color:var(--text);padding:0 12px;font-size:15px;font-weight:700;text-align:center;">
+      <button class="btn btn-ghost" onclick="openManualJob()" style="width:auto;padding:0 16px;">เปิดงาน</button>
+    </div>
+  </div>
+
+  <!-- ALREADY SUBMITTED -->
+  <div id="state-done" class="msg-box hidden">
+    <div class="ic">✅</div>
+    <div style="font-weight:700;font-size:18px;margin-bottom:6px;">งานนี้ส่งรายงานแล้ว</div>
+    <div class="job-id" id="done-job-id" style="margin:6px 0;">—</div>
+    <div style="color:var(--text2);font-size:14px;" id="done-job-sub">—</div>
+    <div style="color:var(--text2);font-size:13px;margin-top:10px;">ถ้าต้องแก้ไขหรือส่งข้อมูลเพิ่มเติม กดปุ่มด้านล่างเพื่อเปิดฟอร์มอีกครั้ง</div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-primary" onclick="reopenSubmittedForm()" style="width:auto;padding:0 18px;">📝 แก้ไข / ส่งรายงานเพิ่มเติม</button>
+    </div>
+  </div>
+
+  <!-- FORM STATE -->
+  <div id="state-form" class="hidden">
+
+    <!-- JOB INFO (read-only) -->
+    <div class="card job-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div class="job-id" id="j-id">JOB-XXXX</div>
+        <span class="badge-st st-open" id="j-status">รอสรุปงาน</span>
+      </div>
+      <div class="job-meta">
+        <div class="meta-item"><div class="meta-label">ลูกค้า</div><div class="meta-val" id="j-client">—</div></div>
+        <div class="meta-item"><div class="meta-label">สาขา</div><div class="meta-val" id="j-branch">—</div></div>
+        <div class="meta-item"><div class="meta-label">ประเภทงาน</div><div class="meta-val"><span class="chip" id="j-type">—</span></div></div>
+        <div class="meta-item"><div class="meta-label">ทีมช่าง</div><div class="meta-val" id="j-team">—</div></div>
+        <div class="meta-item"><div class="meta-label">วันนัด</div><div class="meta-val" id="j-date">—</div></div>
+        <div class="meta-item"><div class="meta-label">เลขงานลูกค้า</div><div class="meta-val" id="j-ref">—</div></div>
+      </div>
+    </div>
+
+    <!-- WORK DETAIL FORM -->
+    <div id="step-work-detail">
+    <div class="card">
+      <div class="step-pill">รายละเอียดงาน</div>
+      <div class="sec-title">📝 สรุปงานที่ทำ</div>
+      <div class="sec-sub">กรอกรายละเอียดงานที่ออกหน้างาน</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div class="form-group">
+          <label>วันที่เข้าจริง <span class="req-star">*</span></label>
+          <input type="date" id="f-date-in">
+        </div>
+        <div class="form-group">
+          <label>เวลาเข้าจริง <span class="req-star">*</span></label>
+          <input type="time" id="f-time-in" step="300">
+        </div>
+        <div class="form-group">
+          <label>วันที่เสร็จงาน <span class="req-star">*</span></label>
+          <input type="date" id="f-date-done">
+        </div>
+        <div class="form-group">
+          <label>เวลาเสร็จงาน <span class="req-star">*</span></label>
+          <input type="time" id="f-time-done" step="300">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>อาการที่พบ</label>
+        <textarea id="f-symptom" placeholder="อาการที่ลูกค้าแจ้งไว้จากแอดมิน" readonly style="background:var(--surface2);color:var(--text2);"></textarea>
+      </div>
+      <div class="form-group">
+        <label>สาเหตุ <span class="req-star">*</span></label>
+        <textarea id="f-cause" placeholder="เช่น แผงคอยล์ตัน น้ำยารั่วจากข้อต่อ อุปกรณ์เสื่อมสภาพ..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>วิธีแก้ไข <span class="req-star">*</span></label>
+        <textarea id="f-fix" placeholder="เช่น เติมน้ำยา R22 2 ปอนด์ ล้างแผง เปลี่ยนอะไหล่..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>อะไหล่ที่ใช้ <span class="req-star">*</span></label>
+        <input type="hidden" id="f-parts">
+        <div class="parts-editor" id="tech-parts-editor"></div>
+        <div class="part-tools">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="part-add" onclick="addTechPartRow()">+ เพิ่มอะไหล่จากระบบ</button>
+            <button type="button" class="part-add alt" onclick="addCustomTechPartRow()">+ อื่นๆ (พิมพ์เอง)</button>
+          </div>
+          <div class="part-hint">พิมพ์เพื่อค้นหาแล้วเลือกอะไหล่จากระบบ — ถ้าไม่มีในระบบ กด "อื่นๆ" เพื่อพิมพ์เอง · ราคาไม่แสดงให้ช่างเห็น</div>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:8px;font-weight:500;color:var(--text);cursor:pointer;font-size:14px;">
+          <input type="checkbox" id="f-noparts" onchange="toggleNoParts()" style="width:18px;height:18px;flex:0 0 auto;">
+          ไม่มีการใช้อะไหล่
+        </label>
+      </div>
+      <div class="form-group">
+        <label>หมายเหตุเพิ่มเติม</label>
+        <textarea id="f-note" placeholder="ข้อควรระวัง นัดติดตามผล อื่นๆ..." style="min-height:60px;"></textarea>
+      </div>
+      <label style="display:flex;align-items:flex-start;gap:8px;margin-top:8px;font-weight:500;color:var(--text);cursor:pointer;font-size:14px;">
+        <input type="checkbox" id="f-need-quote" onchange="toggleQuoteMode()" style="width:18px;height:18px;flex:0 0 auto;margin-top:2px;">
+        สำรวจแล้วต้องเสนอราคาอะไหล่ก่อน ยังไม่สามารถซ่อมได้
+      </label>
+    </div>
+
+    <!-- PHOTO UPLOAD -->
+    <div class="card">
+      <div class="sec-title">📷 อัปโหลดรูป</div>
+      <div class="sec-sub">ถ่ายหรือเลือกรูป — ระบบจะบีบอัดให้อัตโนมัติ</div>
+
+      <div class="up-group">
+        <div class="up-head"><div class="up-label color-before">📸 ตรวจเช็คก่อนดำเนินการ <span class="req-star">*</span></div><div class="up-count" id="cnt-before">0 รูป</div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">ต้องมีอย่างน้อย 2 รูป · สูงสุด 50 รูป · ระบบจะข้ามรูปที่ซ้ำ</div>
+        <div class="up-zone" onclick="document.getElementById('inp-before').click()">
+          <div class="up-icon">➕</div><div class="up-hint">แตะเพื่อเพิ่มรูปตรวจเช็คก่อนดำเนินการ</div>
+        </div>
+        <input type="file" id="inp-before" accept="image/*" multiple class="hidden" onchange="addPhotos('before',this.files)">
+        <div class="thumbs" id="th-before"></div>
+      </div>
+
+      <div class="up-group">
+        <div class="up-head"><div class="up-label color-during">🔧 ระหว่างดำเนินการ <span class="req-star">*</span></div><div class="up-count" id="cnt-during">0 รูป</div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">ต้องมีอย่างน้อย 6 รูป · สูงสุด 50 รูป</div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:500;color:var(--text);cursor:pointer;font-size:14px;">
+          <input type="checkbox" id="f-no-during" onchange="toggleNoPhotos('during')" style="width:18px;height:18px;flex:0 0 auto;">
+          ไม่มีรูปภาพระหว่างดำเนินการ
+        </label>
+        <div class="up-zone" onclick="document.getElementById('inp-during').click()">
+          <div class="up-icon">➕</div><div class="up-hint">แตะเพื่อเพิ่มรูประหว่างดำเนินการ</div>
+        </div>
+        <input type="file" id="inp-during" accept="image/*" multiple class="hidden" onchange="addPhotos('during',this.files)">
+        <div class="thumbs" id="th-during"></div>
+      </div>
+
+      <div class="up-group">
+        <div class="up-head"><div class="up-label color-after">✅ หลังดำเนินการ <span class="req-star">*</span></div><div class="up-count" id="cnt-after">0 รูป</div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">ต้องมีอย่างน้อย 2 รูป · สูงสุด 50 รูป</div>
+        <label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:500;color:var(--text);cursor:pointer;font-size:14px;">
+          <input type="checkbox" id="f-no-after" onchange="toggleNoPhotos('after')" style="width:18px;height:18px;flex:0 0 auto;">
+          ไม่มีรูปภาพหลังดำเนินการ
+        </label>
+        <div class="up-zone" onclick="document.getElementById('inp-after').click()">
+          <div class="up-icon">➕</div><div class="up-hint">แตะเพื่อเพิ่มรูปหลังดำเนินการ</div>
+        </div>
+        <input type="file" id="inp-after" accept="image/*" multiple class="hidden" onchange="addPhotos('after',this.files)">
+        <div class="thumbs" id="th-after"></div>
+      </div>
+
+      <div class="up-group">
+        <div class="up-head"><div class="up-label color-documents">📄 ใบงาน / เอกสาร</div><div class="up-count" id="cnt-documents">0 รูป</div></div>
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">ไม่บังคับจำนวนรูป · เก็บไว้เป็นหลักฐาน ไม่ถูกนำไปใช้สร้างเอกสาร</div>
+        <div class="up-zone" onclick="document.getElementById('inp-documents').click()">
+          <div class="up-icon">➕</div><div class="up-hint">แตะเพื่อเพิ่มรูปใบงานหรือเอกสาร</div>
+        </div>
+        <input type="file" id="inp-documents" accept="image/*" multiple class="hidden" onchange="addPhotos('documents',this.files)">
+        <div class="thumbs" id="th-documents"></div>
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="card">
+      <button class="btn" id="draft-btn" onclick="saveDraft()" style="margin-bottom:10px;background:var(--card2);border:1px solid var(--border);color:var(--text);">บันทึกฉบับร่าง</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitJob()">✓ ส่งงาน</button>
+      <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:10px;">บันทึกร่างเพื่อกลับมากรอกต่อได้ หรือกดส่งงานเมื่อข้อมูลครบแล้ว</div>
+    </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPLOADING OVERLAY -->
+<div class="overlay" id="overlay-upload">
+  <div class="big-spin"></div>
+  <div style="font-weight:700;font-size:16px;" id="upload-status">กำลังส่งงาน...</div>
+  <div style="color:var(--text2);font-size:13px;" id="upload-detail">กำลังบีบอัดและอัปโหลดรูป</div>
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="overlay" id="overlay-success">
+  <div class="success-ic">✓</div>
+  <div style="font-weight:700;font-size:20px;">ส่งงานสำเร็จ!</div>
+  <div style="color:var(--text2);font-size:14px;max-width:300px;">แอดมินได้รับข้อมูลแล้ว ขอบคุณครับ 🙏<br>ปิดหน้านี้ได้เลย</div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG — ต้องใส่ค่าเดียวกับระบบหลัก
+// ============================================================
+const SUPABASE_URL = 'https://mghlmsckdvmdqrxtdfbi.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1naGxtc2NrZHZtZHFyeHRkZmJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTI1NDEsImV4cCI6MjEwMTM4ODU0MX0.ywWlKVOAG6m-rr7MhJaJzbRLNXJkO7AeC6sJJlV5FsY';
+const STATE_KEY = 'service_management_tracker';
+// Cloudflare Worker endpoint สำหรับอัปรูปเข้า R2
+const UPLOAD_ENDPOINT = 'https://profix-r2-upload-worker.profixsolution-team.workers.dev/upload';
+const PHOTO_UPLOAD_CONCURRENCY = 3;
+
+let supa = null;
+try { if(SUPABASE_URL.startsWith('http')) supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){ console.error(e); }
+function sbHeaders(extra={}){return {'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Content-Type':'application/json',...extra};}
+
+// ============================================================
+// PARSE URL: /technician-submit.html?job=JOB-1023&token=xxx
+// ============================================================
+const params = new URLSearchParams(location.search);
+const JOB_ID = params.get('job') || params.get('pr') || '';
+const TOKEN = params.get('token') || '';
+let masterPartOptions = [];
+let techPartRows = [];
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function normJobId(v){ return String(v||'').trim().replace(/\s+/g,'').toUpperCase(); }
+function sameJobId(a,b){ return normJobId(a) === normJobId(b); }
+function openManualJob(){
+  const id = document.getElementById('manual-job')?.value.trim();
+  if(!id){ alert('กรุณากรอก PR'); return; }
+  location.href = `${location.pathname}?job=${encodeURIComponent(id)}`;
+}
+
+let jobData = null;
+let appState = null;
+let jobStorageMode = 'app_state';
+let photos = { before: [], during: [], after: [], documents: [] };
+let noPhoto = { during: false, after: false };
+const PHOTO_MIN = { before: 2, during: 6, after: 2 };
+const PHOTO_MAX = { before: 50, during: 50, after: 50 };
+const CAT_LABEL = { before: 'ตรวจเช็คก่อนดำเนินการ', during: 'ระหว่างดำเนินการ', after: 'หลังดำเนินการ', documents: 'ใบงาน/เอกสาร' };
+
+// ============================================================
+// LOAD JOB
+// ============================================================
+async function loadJob(){
+  if(!JOB_ID){ showError('ไม่พบเลขงาน','ลิงก์ไม่ถูกต้อง กรุณาติดต่อแอดมิน'); return; }
+  try{
+    const job = await loadJobRecord(JOB_ID);
+    if(!job){ showError('ไม่พบงานนี้',`ค้นหา PR: ${JOB_ID} แล้วไม่พบในระบบหลัก — กด "ลองอีกครั้ง" หรือกรอก PR ใหม่`); return; }
+    jobData = job; // เก็บไว้ก่อนเสมอ เผื่อกดเปิดฟอร์มซ้ำจากหน้า "ส่งแล้ว"
+    // สถานะจริงล่าสุดยึดจาก technician_reports (เหมือน tracker) กัน jobs.data.status ค้างไม่ตรงกัน
+    const latest = await loadLatestReportState(job.id || JOB_ID);
+    const submitted = latest
+      ? (latest.is_draft === false)
+      : ['ช่างส่งงานแล้ว','แอดมินตรวจแล้ว','ปิดงานสมบูรณ์','ปิดงาน'].includes(job.status);
+    const needsFix = (latest && latest.review_status === 'ต้องแก้ไข') || job.status === 'ต้องแก้ไข';
+    const realStatus = latest ? (latest.is_draft ? 'ช่างบันทึกร่าง' : (latest.status || job.status)) : job.status;
+    // ส่งแล้วและไม่ได้ถูกตีกลับ → หน้าสรุป (กดกลับไปแก้ได้) ; ไม่งั้น (ร่าง/ต้องแก้ไข/ยังไม่ทำ) → เปิดฟอร์ม
+    if(submitted && !needsFix){
+      document.getElementById('state-loading').classList.add('hidden');
+      document.getElementById('done-job-id').textContent = job.id || JOB_ID;
+      document.getElementById('done-job-sub').textContent = `${job.client||'—'} · ${job.branch||'—'} · สถานะ: ${realStatus||'—'}`;
+      document.getElementById('state-done').classList.remove('hidden');
+      return;
+    }
+    await loadMasterPartOptions();
+    showForm();
+  }catch(e){ showError('เกิดข้อผิดพลาด', e.message); }
+}
+
+// ดึงสถานะรายงานช่างฉบับล่าสุดจาก technician_reports (report_id = <normId>:latest มีตัวเดียวต่องาน)
+async function loadLatestReportState(jobId){
+  try{
+    const reportId = `${normJobId(jobId)}:latest`;
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/technician_reports?report_id=eq.${encodeURIComponent(reportId)}&select=report_id,job_id,is_draft,status,review_status,submitted_at,draft_saved_at,updated_at&limit=1`, { headers: sbHeaders() });
+    if(r.ok){ const rows = await r.json(); if(rows?.[0]) return rows[0]; }
+  }catch(e){ console.warn('latest report state fetch failed', e); }
+  return null;
+}
+async function loadJobRecord(jobId){
+  const cleanJobId = String(jobId||'').trim();
+  // ลองหาในตาราง jobs แบบ exact match — retry กัน fetch พลาดชั่วคราว (กันขึ้น "ไม่พบงาน" ทั้งที่งานมีจริง)
+  for(let attempt=0; attempt<2; attempt++){
+    try{
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${encodeURIComponent(cleanJobId)}&select=id,data`, { headers: sbHeaders() });
+      if(r.ok){
+        const rows = await r.json();
+        if(rows?.[0]?.data){
+          jobStorageMode = 'split';
+          return rows[0].data;
+        }
+        break; // เชื่อมต่อได้แต่ไม่มีแถว → ไปลองแบบ case-insensitive ต่อ
+      }
+    }catch(e){ console.warn('Split job load attempt failed', e); }
+    await new Promise(res=>setTimeout(res, 500)); // หน่วงก่อน retry
+  }
+  try{
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=ilike.${encodeURIComponent(cleanJobId)}&select=id,data`, { headers: sbHeaders() });
+    if(r.ok){
+      const rows = await r.json();
+      const row = rows.find(x=>sameJobId(x.id, cleanJobId));
+      if(row?.data){
+        jobStorageMode = 'split';
+        return row.data;
+      }
+    }
+  }catch(e){ console.warn('Split case-insensitive job load failed, falling back to app_state', e); }
+  // เผื่อ id ในลิงก์ต่างรูปแบบเล็กน้อย (ขีด/ช่องว่าง/ตัวพิมพ์ เช่น PR402749 ↔ PR-402749) — ค้นด้วยเลขแล้วจับคู่แบบ normalize
+  try{
+    const digits = (cleanJobId.match(/\d+/g) || []).sort((a,b)=>b.length-a.length)[0] || '';
+    if(digits.length >= 3){
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=ilike.*${encodeURIComponent(digits)}*&select=id,data`, { headers: sbHeaders() });
+      if(r.ok){
+        const rows = await r.json();
+        const row = rows.find(x=>sameJobId(x.id, cleanJobId)) || (rows.length === 1 ? rows[0] : null);
+        if(row?.data){
+          jobStorageMode = 'split';
+          return row.data;
+        }
+      }
+    }
+  }catch(e){ console.warn('Split fuzzy job load failed, falling back to app_state', e); }
+  try{
+    const rr = await fetch(`${SUPABASE_URL}/rest/v1/rpc/profix_get_job_from_app_state`, {
+      method: 'POST',
+      headers: sbHeaders(),
+      body: JSON.stringify({ p_key: STATE_KEY, p_job_id: jobId })
+    });
+    if(rr.ok){
+      const job = await rr.json();
+      if(job){
+        jobStorageMode = 'app_state';
+        return job;
+      }
+    }
+  }catch(e){ console.warn('Single job RPC load failed, falling back to full app_state', e); }
+  const data = await loadAppState();
+  appState = data || {};
+  jobStorageMode = 'app_state';
+  return (appState.jobs || []).find(j => sameJobId(j.id, cleanJobId)) || null;
+}
+
+async function loadAppState(){
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/app_state?key=eq.${encodeURIComponent(STATE_KEY)}&select=data`, { headers: sbHeaders() });
+  if(!r.ok) throw new Error(await r.text());
+  const rows = await r.json();
+  return rows?.[0]?.data || null;
+}
+
+async function saveAppState(data){
+  const body = JSON.stringify({ key: STATE_KEY, data, updated_at: new Date().toISOString() });
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/app_state`, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+    body
+  });
+  if(!r.ok) throw new Error(await r.text());
+}
+
+function reportTableId(jobId){ return `${normJobId(jobId)}:latest`; }
+function eventId(prefix){ return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`; }
+async function loadMasterPartOptions(){
+  try{
+    const partRows=await fetch(`${SUPABASE_URL}/rest/v1/parts?select=id,data,updated_at&order=updated_at.desc`,{headers:sbHeaders()})
+      .then(async r=>r.ok?await r.json():[]);
+    masterPartOptions=(partRows||[]).map(r=>{
+      const x=r.data||{};
+      return {
+        id:r.id||x._id||x.id||x.code||x.name||'',
+        code:x.code||'',
+        name:x.name||'',
+        category:x.cat||x.category||'อะไหล่',
+        unit:x.unit||'',
+        brand:x.brand||x.spec||'',
+        supplier:x.sup||x.supplier||'',
+        source:'parts'
+      };
+    }).filter(x=>String(x.name||'').trim());
+    if(!masterPartOptions.length){
+      const stockRows=await fetch(`${SUPABASE_URL}/rest/v1/stock_items?select=id,sku,item_name,category,unit,is_active&is_active=eq.true&order=item_name.asc`,{headers:sbHeaders()})
+        .then(async r=>r.ok?await r.json():[]);
+      masterPartOptions=(stockRows||[]).map(x=>({
+        id:x.id||'',
+        code:x.sku||'',
+        name:x.item_name||'',
+        category:x.category||'อะไหล่/สต็อก',
+        unit:x.unit||'',
+        source:'stock'
+      })).filter(x=>String(x.name||'').trim());
+    }
+    if(!masterPartOptions.length){
+      const priceRows=await fetch(`${SUPABASE_URL}/rest/v1/master_price_items?select=id,item_code,item_name,category,default_unit&is_active=eq.true&order=category.asc,item_name.asc`,{headers:sbHeaders()})
+        .then(async r=>r.ok?await r.json():[]);
+      masterPartOptions=(priceRows||[]).filter(x=>/อะไหล่|part|spare|material|วัสดุ/i.test(`${x.category||''} ${x.item_name||''}`)).map(x=>({
+        id:x.id||'',
+        code:x.item_code||'',
+        name:x.item_name||'',
+        category:x.category||'',
+        unit:x.default_unit||'',
+        source:'master_price'
+      })).filter(x=>String(x.name||'').trim());
+    }
+  }catch(e){
+    console.warn('load master part options failed',e);
+    masterPartOptions=[];
+  }
+  renderTechPartOptions();
+}
+function renderTechPartOptions(){
+  const dl=document.getElementById('tech-part-options');if(!dl)return;
+  dl.innerHTML=masterPartOptions.map(p=>`<option value="${esc(p.name)}" label="${esc([p.category,p.code,p.supplier].filter(Boolean).join(' · '))}"></option>`).join('');
+}
+function findMasterPartByName(name){
+  const k=String(name||'').trim().toLowerCase();
+  if(!k)return null;
+  return masterPartOptions.find(p=>String(p.name||'').trim().toLowerCase()===k)||null;
+}
+function parsePartsTextToRows(text){
+  const raw=String(text||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean);
+  return raw.filter(x=>x!=='ไม่มีการใช้อะไหล่').map(line=>{
+    const m=line.match(/^(.*?)(?:\s+|x|×)(\d+(?:\.\d+)?)\s*([^\d\s]+)?$/i);
+    const name=(m?m[1]:line).trim()||line;
+    const hit=findMasterPartByName(name);
+    return {masterId:hit?.id||'',name,qty:m?Number(m[2]||1):1,unit:m?(m[3]||hit?.unit||''):(hit?.unit||''),custom:!hit};
+  });
+}
+function setTechPartRows(rows){
+  techPartRows=(rows&&rows.length?rows:[{masterId:'',name:'',qty:1,unit:'',custom:false}]).map(r=>({...r}));
+  renderTechPartRows();
+}
+function syncTechPartsText(){
+  const lines=techPartRows.map(r=>{
+    const name=String(r.name||'').trim();
+    if(!name)return '';
+    const qty=Number(r.qty||1)||1;
+    const unit=String(r.unit||'').trim();
+    return `${name} x${qty}${unit?' '+unit:''}`;
+  }).filter(Boolean);
+  const el=document.getElementById('f-parts');if(el)el.value=lines.join('\n');
+  return lines.join('\n');
+}
+function renderTechPartRows(){
+  const box=document.getElementById('tech-parts-editor');if(!box)return;
+  box.innerHTML=techPartRows.map((r,i)=>{
+    const nameCell = r.custom
+      ? `<input value="${esc(r.name||'')}" placeholder="พิมพ์ชื่ออะไหล่เอง (นอกระบบ)" autocomplete="off" oninput="updateTechPartRow(${i},'name',this.value)"><div class="part-custom-tag">อื่นๆ (พิมพ์เอง)</div>`
+      : `<input value="${esc(r.name||'')}" placeholder="ค้นหาอะไหล่จากระบบ" autocomplete="off" onfocus="openTechPartDropdown(${i},this.value)" oninput="openTechPartDropdown(${i},this.value)" onblur="revertTechPartInput(${i})" onkeydown="techPartKeydown(event,${i})"><div class="part-dd" id="part-dd-${i}" style="display:none;"></div>`;
+    return `<div class="part-row">
+      <div class="part-name-wrap">${nameCell}</div>
+      <input type="number" min="0" step="any" value="${esc(r.qty??1)}" placeholder="จำนวน" oninput="updateTechPartRow(${i},'qty',this.value)">
+      <input value="${esc(r.unit||'')}" placeholder="หน่วย" oninput="updateTechPartRow(${i},'unit',this.value)">
+      <button type="button" class="rm-part" onclick="removeTechPartRow(${i})">×</button>
+    </div>`;
+  }).join('');
+  syncTechPartsText();
+}
+function updateTechPartRow(i,field,value){
+  if(!techPartRows[i])return;
+  techPartRows[i][field]=value;
+  if(field==='name'&&techPartRows[i].custom){ techPartRows[i].masterId=''; techPartRows[i].code=''; techPartRows[i].supplier=''; }
+  syncTechPartsText();
+}
+// ===== dropdown ค้นหาอะไหล่จากระบบ (เลือกได้อย่างเดียว) =====
+let techPartDropdownList = {}; // เก็บรายการที่กรองไว้ต่อแถว → เลือกด้วย index กัน bug escaping id
+function techPartMatches(query){
+  const q=String(query||'').replace(/\s+/g,' ').trim().toLowerCase();
+  let list=masterPartOptions;
+  if(q){
+    const tokens=q.split(' ').filter(Boolean);
+    list=list.filter(p=>{const hay=[p.name,p.code,p.category,p.brand,p.supplier].map(v=>String(v||'').toLowerCase()).join(' ');return tokens.every(t=>hay.includes(t));});
+  }
+  return list.slice(0,200); // แสดงได้มากขึ้น (เดิม 40 ทำให้บางรายการไม่ขึ้น)
+}
+function openTechPartDropdown(i,query){
+  const dd=document.getElementById('part-dd-'+i);if(!dd)return;
+  if(!masterPartOptions.length){
+    techPartDropdownList[i]=[];
+    dd.innerHTML='<div class="part-dd-empty">ยังไม่มีรายการอะไหล่ในระบบ<br>กด "+ อื่นๆ" เพื่อพิมพ์เอง</div>';
+    dd.style.display='';return;
+  }
+  const list=techPartMatches(query);
+  techPartDropdownList[i]=list;
+  dd.innerHTML=list.length
+    ? list.map((p,idx)=>`<div class="part-dd-row" onmousedown="event.preventDefault();pickTechPart(${i},${idx})"><div class="part-dd-name">${esc(p.name)}</div>${[p.category,p.code,p.brand,p.supplier].filter(Boolean).length?`<div class="part-dd-sub">${esc([p.category,p.code,p.brand,p.supplier].filter(Boolean).join(' · '))}</div>`:''}</div>`).join('')
+    : '<div class="part-dd-empty">ไม่พบอะไหล่ที่ตรงกับคำค้น<br>กด "+ อื่นๆ" เพื่อพิมพ์เอง</div>';
+  dd.style.display='';
+}
+function closeTechPartDropdown(i){const dd=document.getElementById('part-dd-'+i);if(dd)dd.style.display='none';}
+function pickTechPart(i,idx){
+  const p=(techPartDropdownList[i]||[])[idx];
+  if(!p||!techPartRows[i])return;
+  techPartRows[i].masterId=p.id;
+  techPartRows[i].name=p.name;
+  techPartRows[i].code=p.code||'';
+  techPartRows[i].category=p.category||'';
+  techPartRows[i].supplier=p.supplier||'';
+  techPartRows[i].unit=techPartRows[i].unit||p.unit||'';
+  techPartRows[i].custom=false;
+  closeTechPartDropdown(i);
+  renderTechPartRows();
+}
+// เลือกได้อย่างเดียว: ถ้าพิมพ์ค้นหาแล้วไม่ได้เลือกจากรายการ ให้ดีด input กลับเป็นชื่อที่เลือกไว้ (หรือว่าง)
+function revertTechPartInput(i){
+  setTimeout(()=>{
+    closeTechPartDropdown(i);
+    const box=document.getElementById('tech-parts-editor');if(!box)return;
+    const input=box.querySelectorAll('.part-name-wrap > input')[i];
+    if(input && techPartRows[i] && !techPartRows[i].custom) input.value=techPartRows[i].name||'';
+  },200);
+}
+function techPartKeydown(e,i){
+  if(e.key==='Escape'){ closeTechPartDropdown(i); }
+  else if(e.key==='Enter'){ e.preventDefault(); openTechPartDropdown(i,e.target.value); if((techPartDropdownList[i]||[]).length) pickTechPart(i,0); }
+}
+function addTechPartRow(){
+  techPartRows.push({masterId:'',name:'',qty:1,unit:'',custom:false});
+  renderTechPartRows();
+}
+function addCustomTechPartRow(){
+  techPartRows.push({masterId:'',name:'',qty:1,unit:'',custom:true});
+  renderTechPartRows();
+  const box=document.getElementById('tech-parts-editor');
+  const inputs=box?box.querySelectorAll('.part-name-wrap > input'):null;
+  if(inputs&&inputs.length)inputs[inputs.length-1].focus();
+}
+function removeTechPartRow(i){
+  techPartRows.splice(i,1);
+  if(!techPartRows.length)techPartRows.push({masterId:'',name:'',qty:1,unit:'',custom:false});
+  renderTechPartRows();
+}
+function collectTechPartRows(){
+  return techPartRows.map(r=>({
+    masterId:r.masterId||'',
+    code:r.code||'',
+    name:String(r.name||'').trim(),
+    qty:Number(r.qty||1)||1,
+    unit:String(r.unit||'').trim(),
+    category:r.category||'',
+    supplier:r.supplier||'',
+    custom:!!r.custom
+  })).filter(r=>r.name);
+}
+function parseUsedPartsText(text, structured=[]){
+  if(Array.isArray(structured)&&structured.length){
+    return structured.filter(r=>String(r.name||r.part_name_text||'').trim()).map((r,i)=>({
+      id:`${reportTableId(JOB_ID)}:part:${i+1}`,
+      part_name_text:String(r.name||r.part_name_text||'').trim(),
+      quantity:Number(r.qty||r.quantity||1)||1,
+      unit:String(r.unit||'').trim(),
+      note:`${String(r.name||r.part_name_text||'').trim()} x${Number(r.qty||r.quantity||1)||1}${r.unit?' '+r.unit:''}`,
+      master_price_item_id:r.masterId||r.master_price_item_id||'',
+      item_code:r.code||r.item_code||'',
+      item_category:r.category||'',
+      supplier_name:r.supplier||r.supplier_name||'',
+      is_custom:!!r.custom
+    }));
+  }
+  const raw=String(text||'').split(/\n|,/).map(x=>x.trim()).filter(Boolean);
+  if(!raw.length || raw.some(x=>x==='ไม่มีการใช้อะไหล่'))return [];
+  return raw.map((line,i)=>{
+    const m=line.match(/^(.*?)(?:\s+|x|×)(\d+(?:\.\d+)?)\s*([^\d\s]+)?$/i);
+    const name=(m?m[1]:line).trim()||line;
+    return {
+      id:`${reportTableId(JOB_ID)}:part:${i+1}`,
+      part_name_text:name,
+      quantity:m?Number(m[2]||1):1,
+      unit:m?(m[3]||''):'',
+      note:line
+    };
+  });
+}
+
+async function saveTechnicianUsedParts(reportId, jobId, partsText, savedAt, structuredParts=[]){
+  const cleanJobId = jobId || JOB_ID;
+  const del = await fetch(`${SUPABASE_URL}/rest/v1/technician_used_parts?technician_report_id=eq.${encodeURIComponent(reportId)}`, {
+    method:'DELETE',
+    headers: sbHeaders()
+  });
+  if(!del.ok) console.warn('Cannot clear previous technician_used_parts', await del.text());
+  const rows=parseUsedPartsText(partsText, structuredParts).map(p=>({
+    ...p,
+    technician_report_id:reportId,
+    job_id:cleanJobId,
+    matched_status:'pending',
+    created_by:'technician_submit',
+    created_at:savedAt,
+    updated_at:savedAt
+  }));
+  if(!rows.length)return;
+  let r = await fetch(`${SUPABASE_URL}/rest/v1/technician_used_parts`, {
+    method:'POST',
+    headers: sbHeaders({ 'Prefer':'resolution=merge-duplicates' }),
+    body: JSON.stringify(rows)
+  });
+  if(!r.ok){
+    const msg=await r.text();
+    if(/master_price_item_id|item_code|item_category|supplier_name|is_custom|schema cache|column/i.test(msg)){
+      const basicRows=rows.map(({master_price_item_id,item_code,item_category,supplier_name,is_custom,...rest})=>rest);
+      r = await fetch(`${SUPABASE_URL}/rest/v1/technician_used_parts`, {
+        method:'POST',
+        headers: sbHeaders({ 'Prefer':'resolution=merge-duplicates' }),
+        body: JSON.stringify(basicRows)
+      });
+    }else{
+      throw new Error('บันทึก technician_used_parts ไม่สำเร็จ: ' + msg);
+    }
+  }
+  if(!r.ok) throw new Error('บันทึก technician_used_parts ไม่สำเร็จ: ' + await r.text());
+}
+
+async function upsertTechnicianReportTables(job, report, { images=[], documentImages=[], savedAt, status, reviewStatus, isDraft, roundId='', eventType='' }){
+  const jobId = job?.id || JOB_ID;
+  const reportId = reportTableId(jobId);
+  const reportData = {
+    ...report,
+    images,
+    documentImages,
+    status,
+    reviewStatus,
+    isDraft,
+    jobSnapshot: {
+      id: job.id,
+      client: job.client,
+      branch: job.branch,
+      type: job.type || job.job_type,
+      team: job.team,
+      ref: job.ref || job.client_ref,
+      date: job.date || job.scheduled_date
+    }
+  };
+  const reportRow = {
+    report_id: reportId,
+    job_id: jobId,
+    round_id: roundId || reportId,
+    status,
+    review_status: reviewStatus,
+    is_draft: !!isDraft,
+    report_data: reportData,
+    submitted_at: isDraft ? null : savedAt,
+    draft_saved_at: isDraft ? savedAt : (job.technicianReport?.draftSavedAt || null),
+    updated_at: savedAt
+  };
+  const rr = await fetch(`${SUPABASE_URL}/rest/v1/technician_reports?on_conflict=report_id`, {
+    method: 'POST',
+    headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+    body: JSON.stringify(reportRow)
+  });
+  if(!rr.ok) throw new Error('บันทึก technician_reports ไม่สำเร็จ: ' + await rr.text());
+
+  const allImages = [
+    ...images.map(im=>({ ...im, documentOnly:false })),
+    ...documentImages.map(im=>({ ...im, documentOnly:true }))
+  ];
+  const clearImagesResult = await fetch(`${SUPABASE_URL}/rest/v1/technician_report_images?report_id=eq.${encodeURIComponent(reportId)}`, {
+    method: 'DELETE',
+    headers: sbHeaders()
+  });
+  if(!clearImagesResult.ok) throw new Error('ล้าง technician_report_images เดิมไม่สำเร็จ: ' + await clearImagesResult.text());
+
+  if(allImages.length){
+    const imageRows = allImages.map((im,idx)=>({
+      id: im.id || `${reportId}:img:${idx}`,
+      report_id: reportId,
+      job_id: jobId,
+      category: im.category || (im.documentOnly ? 'documents' : ''),
+      url: im.url || '',
+      data: im,
+      uploaded_at: im.uploadedAt || savedAt,
+      updated_at: savedAt
+    }));
+    const ir = await fetch(`${SUPABASE_URL}/rest/v1/technician_report_images`, {
+      method: 'POST',
+      headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+      body: JSON.stringify(imageRows)
+    });
+    if(!ir.ok) throw new Error('บันทึก technician_report_images ไม่สำเร็จ: ' + await ir.text());
+  }
+
+  const eventRow = {
+    id: eventId(eventType || (isDraft ? 'draft' : 'submit')),
+    job_id: jobId,
+    report_id: reportId,
+    event_type: eventType || (isDraft ? 'draft_saved' : 'submitted'),
+    data: { status, reviewStatus, isDraft, report: reportData },
+    created_at: savedAt
+  };
+  const er = await fetch(`${SUPABASE_URL}/rest/v1/technician_report_events`, {
+    method: 'POST',
+    headers: sbHeaders(),
+    body: JSON.stringify(eventRow)
+  });
+  if(!er.ok) throw new Error('บันทึก technician_report_events ไม่สำเร็จ: ' + await er.text());
+  await saveTechnicianUsedParts(reportId, jobId, report.parts, savedAt, report.partsStructured||[]);
+  return { reportId, reportData };
+}
+
+async function patchJobAfterTechReport(jobId, patch, { statuses=[], adminTaskNote='', savedAt=new Date().toISOString() } = {}){
+  const pr = await fetch(`${SUPABASE_URL}/rest/v1/rpc/profix_patch_job_after_tech_report`, {
+    method: 'POST',
+    headers: sbHeaders(),
+    body: JSON.stringify({
+      p_job_id: jobId,
+      p_patch: patch,
+      p_statuses: statuses,
+      p_admin_task_note: adminTaskNote,
+      p_saved_at: savedAt
+    })
+  });
+  if(!pr.ok) throw new Error('อัปเดตสถานะงานไม่สำเร็จ: ' + await pr.text());
+}
+
+async function saveJobRecord(job, { adminTaskNote='', savedAt=new Date().toISOString(), statuses=[] } = {}){
+  const targetJobId = job?.id || JOB_ID;
+  if(jobStorageMode === 'split'){
+    try{
+      const jobBody = JSON.stringify({ id: targetJobId, data: job, updated_at: savedAt });
+      const jr = await fetch(`${SUPABASE_URL}/rest/v1/jobs`, {
+        method: 'POST',
+        headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+        body: jobBody
+      });
+      if(!jr.ok) throw new Error(await jr.text());
+      await updateRelatedSplitRows(job, { jobId: targetJobId, adminTaskNote, savedAt, statuses });
+      return;
+    }catch(e){
+      console.warn('Split job save failed, falling back to app_state RPC', e);
+    }
+  }
+
+  const rpcPayload = {
+    p_key: STATE_KEY,
+    p_job_id: targetJobId,
+    p_job: job,
+    p_statuses: statuses,
+    p_admin_task_note: adminTaskNote,
+    p_saved_at: savedAt
+  };
+  const rr = await fetch(`${SUPABASE_URL}/rest/v1/rpc/profix_update_job_in_app_state`, {
+    method: 'POST',
+    headers: sbHeaders(),
+    body: JSON.stringify(rpcPayload)
+  });
+  if(rr.ok) return;
+  console.warn('RPC save failed, falling back to full app_state save', await rr.text());
+
+  const latestState = await loadAppState();
+  if(!latestState || !Array.isArray(latestState.jobs)) throw new Error('ไม่พบข้อมูลระบบหลักใน Supabase');
+  const latestJob = latestState.jobs.find(j => sameJobId(j.id, targetJobId));
+  if(!latestJob) throw new Error('ไม่พบงานนี้ในระบบหลัก');
+  Object.assign(latestJob, job);
+  statuses.forEach(s=>{
+    if(Array.isArray(latestState.J_ST) && !latestState.J_ST.includes(s)) latestState.J_ST.push(s);
+    if(Array.isArray(latestState.A_ST) && !latestState.A_ST.includes(s)) latestState.A_ST.push(s);
+  });
+  if(Array.isArray(latestState.adminTasks)){
+    latestState.adminTasks.forEach(t=>{
+      if(sameJobId(t.jobId, targetJobId)){
+        t.status = job.status || t.status;
+        t.techUpdateUnread = !!job.techUpdateUnread;
+        t.techUpdateAt = job.techUpdateAt || savedAt;
+        t.techUpdateType = job.techUpdateType || '';
+        if(adminTaskNote){
+          t.reportReviewNote = adminTaskNote;
+          t.reportReviewedAt = savedAt;
+        }
+      }
+    });
+  }
+  latestState.lastDataUpdatedAt = savedAt;
+  await saveAppState(latestState);
+}
+
+async function updateRelatedSplitRows(job, { jobId=JOB_ID, adminTaskNote='', savedAt, statuses=[] }){
+  const [taskRes, metaRes] = await Promise.all([
+    fetch(`${SUPABASE_URL}/rest/v1/admin_tasks?select=id,data&data->>jobId=eq.${encodeURIComponent(jobId)}`, { headers: sbHeaders() }),
+    fetch(`${SUPABASE_URL}/rest/v1/system_data?id=eq.main&select=data`, { headers: sbHeaders() })
+  ]);
+  if(taskRes.ok){
+    let rows = await taskRes.json();
+    if(!rows.length){
+      try{
+        const fallbackRes = await fetch(`${SUPABASE_URL}/rest/v1/admin_tasks?select=id,data&limit=1000`, { headers: sbHeaders() });
+        if(fallbackRes.ok){
+          rows = (await fallbackRes.json()).filter(row=>sameJobId(row?.data?.jobId, jobId));
+        }
+      }catch(e){ console.warn('Admin task fallback lookup failed', e); }
+    }
+    for(const row of rows){
+      const task = { ...(row.data || {}) };
+      task.status = job.status || task.status;
+      task.techUpdateUnread = !!job.techUpdateUnread;
+      task.techUpdateAt = job.techUpdateAt || savedAt;
+      task.techUpdateType = job.techUpdateType || '';
+      if(adminTaskNote){
+        task.reportReviewNote = adminTaskNote;
+        task.reportReviewedAt = savedAt;
+      }
+      await fetch(`${SUPABASE_URL}/rest/v1/admin_tasks`, {
+        method: 'POST',
+        headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+        body: JSON.stringify({ id: row.id, data: task, updated_at: savedAt })
+      });
+    }
+  }
+  if(metaRes.ok){
+    const rows = await metaRes.json();
+    const meta = { ...(rows?.[0]?.data || {}) };
+    statuses.forEach(s=>{
+      if(Array.isArray(meta.J_ST) && !meta.J_ST.includes(s)) meta.J_ST.push(s);
+      if(Array.isArray(meta.A_ST) && !meta.A_ST.includes(s)) meta.A_ST.push(s);
+    });
+    meta.lastDataUpdatedAt = savedAt;
+    await fetch(`${SUPABASE_URL}/rest/v1/system_data`, {
+      method: 'POST',
+      headers: sbHeaders({ 'Prefer': 'resolution=merge-duplicates' }),
+      body: JSON.stringify({ id:'main', data: meta, updated_at: savedAt })
+    });
+  }
+}
+
+function showError(title, msg){
+  document.getElementById('state-loading').classList.add('hidden');
+  document.getElementById('state-error').classList.remove('hidden');
+  document.getElementById('error-title').textContent = title;
+  document.getElementById('error-msg').textContent = msg;
+}
+// เปิดฟอร์มอีกครั้งจากหน้า "ส่งแล้ว" (กรณีต้องแก้ไข/ส่งรอบเพิ่ม) — prefill ข้อมูลรอบล่าสุดให้
+async function reopenSubmittedForm(){
+  if(!jobData)return;
+  document.getElementById('state-done').classList.add('hidden');
+  // โหลดแคตตาล็อกอะไหล่ก่อนเสมอ — loadJob() ข้ามขั้นนี้ไปตอนรายงานถูกส่งแล้ว ทำให้ dropdown ว่าง
+  if(!masterPartOptions.length)await loadMasterPartOptions();
+  showForm();
+}
+// ลองโหลดงานใหม่ (กรณี fetch พลาดชั่วคราว)
+function retryLoadJob(){
+  document.getElementById('state-error').classList.add('hidden');
+  document.getElementById('state-loading').classList.remove('hidden');
+  loadJob();
+}
+
+async function showForm(){
+  document.getElementById('state-loading').classList.add('hidden');
+  document.getElementById('state-form').classList.remove('hidden');
+  document.getElementById('j-id').textContent = jobData.id;
+  document.getElementById('j-client').textContent = jobData.client || '—';
+  document.getElementById('j-branch').textContent = jobData.branch || '—';
+  document.getElementById('j-type').textContent = jobData.job_type || jobData.type || '—';
+  document.getElementById('j-team').textContent = jobData.team || '—';
+  document.getElementById('j-date').textContent = jobData.scheduled_date || jobData.date || '—';
+  document.getElementById('j-ref').textContent = jobData.client_ref || jobData.ref || '—';
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const time = `${String(now.getHours()).padStart(2,'0')}:${String(Math.floor(now.getMinutes()/5)*5).padStart(2,'0')}`;
+  document.getElementById('f-date-in').value = jobData.dateIn || today;
+  document.getElementById('f-time-in').value = jobData.timeIn || time;
+  document.getElementById('f-date-done').value = jobData.dateDone || '';
+  document.getElementById('f-time-done').value = jobData.timeDone || '';
+  document.getElementById('f-symptom').value = jobData.symptom || jobData.note || jobData.technicianReport?.symptom || '';
+  document.getElementById('f-cause').value = jobData.cause || jobData.technicianReport?.cause || '';
+  document.getElementById('f-fix').value = jobData.fix || jobData.technicianReport?.fix || '';
+  const existingPartsRows = jobData.technicianReport?.partsStructured || jobData.technicianReport?.parts_detail || [];
+  setTechPartRows(Array.isArray(existingPartsRows)&&existingPartsRows.length ? existingPartsRows.map(r=>({masterId:r.masterId||r.master_price_item_id||'',name:r.name||r.part_name_text||'',qty:r.qty||r.quantity||1,unit:r.unit||'',supplier:r.supplier||r.supplier_name||'',custom:!!r.custom})) : parsePartsTextToRows(jobData.partsUsed || jobData.technicianReport?.parts || ''));
+  document.getElementById('f-note').value = jobData.note2 || jobData.technicianReport?.note || '';
+  document.getElementById('f-need-quote').checked = !!jobData.technicianReport?.needQuote || jobData.status === 'รออนุมัติอะไหล่';
+  noPhoto = { during: !!jobData.technicianReport?.noPhoto?.during, after: !!jobData.technicianReport?.noPhoto?.after };
+  document.getElementById('f-no-during').checked = noPhoto.during;
+  document.getElementById('f-no-after').checked = noPhoto.after;
+  const oldImages = Array.isArray(jobData.technicianReport?.images) ? jobData.technicianReport.images : [];
+  oldImages.forEach(im=>{
+    if(!photos[im.category])return;
+    photos[im.category].push({id:im.id||('old-'+Math.random().toString(36).slice(2)),existing:true,uploadedMeta:im,dataUrl:im.url,url:im.url,status:'ready',width:im.width||0,height:im.height||0,fileKey:im.name||im.url});
+  });
+  const oldDocumentImages = Array.isArray(jobData.technicianReport?.documentImages) ? jobData.technicianReport.documentImages : [];
+  oldDocumentImages.forEach(im=>{
+    photos.documents.push({id:im.id||('old-doc-'+Math.random().toString(36).slice(2)),existing:true,uploadedMeta:im,dataUrl:im.url,url:im.url,status:'ready',width:im.width||0,height:im.height||0,fileKey:im.name||im.url});
+  });
+  // โหลดรูปเดิมจาก technician_report_images (รูปที่อัปไว้รอบก่อน/ฉบับร่าง) — job data เก็บแค่จำนวน ไม่ได้เก็บรูปจริง
+  await loadExistingPhotosIntoForm(jobData.id || JOB_ID);
+  ['before','during','after'].forEach(cat=>{renderThumbs(cat);toggleNoPhotos(cat,false);});
+  renderThumbs('documents');
+  toggleQuoteMode();
+}
+// ดึงรูปที่อัปไว้แล้วจากตาราง technician_report_images มาแสดงในฟอร์ม (ช่างจะได้เห็นว่าอัปอะไรไปแล้ว)
+async function loadExistingPhotosIntoForm(jobId){
+  try{
+    const reportId = `${normJobId(jobId)}:latest`;
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/technician_report_images?report_id=eq.${encodeURIComponent(reportId)}&select=id,category,url,data&order=updated_at.asc`, { headers: sbHeaders() });
+    if(!r.ok) return;
+    const rows = await r.json();
+    rows.forEach(row=>{
+      const im = row.data || {};
+      const cat = row.category || im.category || (im.documentOnly ? 'documents' : 'before');
+      if(!photos[cat]) return;
+      const url = row.url || im.url || '';
+      if(!url) return;
+      if(photos[cat].some(p=>(p.url||p.fileKey)===url)) return; // กันซ้ำกับรูปที่มีอยู่แล้ว
+      photos[cat].push({ id: row.id || im.id || ('old-'+Math.random().toString(36).slice(2)), existing:true, uploadedMeta:im, dataUrl:url, url, status:'ready', width:im.width||0, height:im.height||0, fileKey: im.name || url });
+    });
+  }catch(e){ console.warn('load existing photos failed', e); }
+}
+
+// ============================================================
+// PHOTO HANDLING + COMPRESSION
+// ============================================================
+async function addPhotos(cat, files){
+  const max = PHOTO_MAX[cat] ?? Infinity;
+  let remaining = Number.isFinite(max) ? max - photos[cat].length : Infinity;
+  if(Number.isFinite(max) && remaining <= 0){
+    alert(`รูป${CAT_LABEL[cat]}อัปได้สูงสุด ${max} รูปแล้ว`);
+    document.getElementById('inp-'+cat).value = '';
+    return;
+  }
+  let skipped = 0;
+  let duplicated = 0;
+  for(const file of files){
+    if(!file.type.startsWith('image/')) continue;
+    if(Number.isFinite(max) && remaining <= 0){ skipped++; continue; }
+    const fileKey = `${file.name}|${file.size}|${file.lastModified}`;
+    if(photos[cat].some(p=>p.fileKey===fileKey)){
+      duplicated++;
+      continue;
+    }
+    if(Number.isFinite(max)) remaining--;
+    const id = Date.now() + '-' + Math.random().toString(36).slice(2,7);
+    const entry = { id, file, fileKey, compressed:null, dataUrl:null, status:'compressing' };
+    photos[cat].push(entry);
+    renderThumbs(cat);
+    // compress async
+    compressImage(file).then(({blob, dataUrl, width, height})=>{
+      entry.compressed = blob;
+      entry.dataUrl = dataUrl;
+      entry.width = width;
+      entry.height = height;
+      entry.status = 'ready';
+      renderThumbs(cat);
+    }).catch(()=>{ entry.status='error'; renderThumbs(cat); });
+  }
+  if(skipped > 0) alert(`เพิ่มได้สูงสุด ${PHOTO_MAX[cat]} รูป — ข้ามไป ${skipped} รูปที่เกิน`);
+  if(duplicated > 0) alert(`ข้ามรูปซ้ำ ${duplicated} รูป`);
+  // reset input
+  document.getElementById('inp-'+cat).value = '';
+}
+
+// no-parts checkbox toggle
+function toggleNoParts(){
+  const cb = document.getElementById('f-noparts');
+  const ta = document.getElementById('f-parts');
+  const editor=document.getElementById('tech-parts-editor');
+  if(cb.checked){
+    ta.value='';
+    ta.disabled=true;
+    ta.style.opacity='.4';
+    if(editor)editor.style.opacity='.4';
+  }else{
+    ta.disabled=false;
+    ta.style.opacity='1';
+    if(editor)editor.style.opacity='1';
+    syncTechPartsText();
+  }
+}
+
+function toggleNoPhotos(cat, clear=true){
+  if(!(cat in noPhoto))return;
+  const cb = document.getElementById('f-no-'+cat);
+  noPhoto[cat] = !!cb?.checked;
+  const input = document.getElementById('inp-'+cat);
+  const zone = input?.previousElementSibling;
+  if(input) input.disabled = noPhoto[cat];
+  if(zone){
+    zone.style.opacity = noPhoto[cat] ? '.35' : '1';
+    zone.style.pointerEvents = noPhoto[cat] ? 'none' : 'auto';
+  }
+  if(clear && noPhoto[cat] && photos[cat].length){
+    if(confirm(`ล้างรูป${CAT_LABEL[cat]}ทั้งหมดหรือไม่?`)){
+      photos[cat] = [];
+      renderThumbs(cat);
+    }
+  }
+}
+
+function toggleQuoteMode(){
+  const needQuote = document.getElementById('f-need-quote').checked;
+  const dateDone = document.getElementById('f-date-done');
+  const timeDone = document.getElementById('f-time-done');
+  dateDone.disabled = needQuote;
+  timeDone.disabled = needQuote;
+  dateDone.style.opacity = needQuote ? '.45' : '1';
+  timeDone.style.opacity = needQuote ? '.45' : '1';
+  if(needQuote){
+    dateDone.value = '';
+    timeDone.value = '';
+    document.getElementById('f-no-during').checked = true;
+    document.getElementById('f-no-after').checked = true;
+    toggleNoPhotos('during',false);
+    toggleNoPhotos('after',false);
+  }
+}
+
+function compressImage(file, maxW=1100, quality=0.68){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = ()=>{
+      let { width, height } = img;
+      if(width > maxW){ height = Math.round(height * maxW / width); width = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob=>{
+        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+        resolve({ blob, dataUrl, width, height });
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function renderThumbs(cat){
+  const el = document.getElementById('th-'+cat);
+  el.innerHTML = photos[cat].map(p=>`
+    <div class="thumb">
+      ${p.dataUrl ? `<img src="${p.dataUrl}">` : ''}
+      ${p.status==='compressing' ? '<div class="pct">...</div>' : ''}
+      <button class="rm" onclick="removePhoto('${cat}','${p.id}')">×</button>
+    </div>`).join('');
+  document.getElementById('cnt-'+cat).textContent = photos[cat].length + ' รูป';
+}
+
+function removePhoto(cat, id){
+  photos[cat] = photos[cat].filter(p=>p.id!==id);
+  renderThumbs(cat);
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+function collectReportDraft(){
+  const noParts = document.getElementById('f-noparts').checked;
+  const structuredParts = noParts ? [] : collectTechPartRows();
+  const partsVal = noParts ? '' : syncTechPartsText().trim();
+  return {
+    dateIn: document.getElementById('f-date-in').value,
+    timeIn: document.getElementById('f-time-in').value,
+    dateDone: document.getElementById('f-date-done').value,
+    timeDone: document.getElementById('f-time-done').value,
+    symptom: document.getElementById('f-symptom').value.trim(),
+    cause: document.getElementById('f-cause').value.trim(),
+    fix: document.getElementById('f-fix').value.trim(),
+    parts: noParts ? 'ไม่มีการใช้อะไหล่' : partsVal,
+    partsStructured: structuredParts,
+    noParts,
+    note: document.getElementById('f-note').value.trim(),
+    needQuote: document.getElementById('f-need-quote').checked,
+    noPhoto: { ...noPhoto }
+  };
+}
+
+async function mapWithConcurrency(items, limit, mapper){
+  const results = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async ()=>{
+    while(next < items.length){
+      const i = next++;
+      results[i] = await mapper(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
+function allPhotoEntries(){
+  return Object.values(photos).flat();
+}
+
+async function collectUploadedImages(report, cats=['before','during','after']){
+  const allPhotos = cats.flatMap(cat=>photos[cat]||[]);
+  if(allPhotos.some(p=>p.status==='compressing')) throw new Error('กรุณารอรูปบีบอัดเสร็จก่อน');
+  const uploadedImages = [];
+  const uploadTasks = [];
+  let done = 0;
+  let order = 0;
+  for(const cat of cats){
+    for(const p of photos[cat]){
+      if(p.existing){
+        uploadedImages.push({ order: order++, ...(p.uploadedMeta || {id:p.id,category:cat,label:CAT_LABEL[cat],url:p.url||p.dataUrl||'',uploadedAt:new Date().toISOString(),storage:'external'}) });
+        continue;
+      }
+      uploadTasks.push({ order: order++, cat, p });
+    }
+  }
+  const total = uploadTasks.length;
+  const uploadedNewImages = await mapWithConcurrency(uploadTasks, PHOTO_UPLOAD_CONCURRENCY, async ({ order, cat, p }, index)=>{
+      document.getElementById('upload-detail').textContent = total ? `อัปโหลดรูป ${done+1}/${total}` : '';
+      const uploadBlob = await ensureUploadBlob(p, cat);
+      const uploaded = await uploadPhoto(uploadBlob, cat, index, p);
+      const meta = {
+        order,
+        id: p.id,
+        category: cat,
+        label: CAT_LABEL[cat],
+        url: uploaded.url,
+        name: p.file?.name || `${cat}_${done+1}.jpg`,
+        size: uploadBlob.size || p.compressed?.size || p.file?.size || 0,
+        width: p.width || 0,
+        height: p.height || 0,
+        orientation: (p.height||0) > (p.width||0) ? 'portrait' : 'landscape',
+        roundType: report.needQuote ? 'survey' : 'repair',
+        roundLabel: report.needQuote ? 'สำรวจ' : 'ซ่อมจริง',
+        uploadedAt: new Date().toISOString(),
+        storage: uploaded.storage
+      };
+      p.existing = true;
+      p.uploadedMeta = meta;
+      p.url = meta.url;
+      p.dataUrl = meta.url || p.dataUrl;
+      done++;
+      document.getElementById('upload-detail').textContent = total ? `อัปโหลดรูป ${done}/${total}` : '';
+      return meta;
+  });
+  return [...uploadedImages, ...uploadedNewImages]
+    .sort((a,b)=>a.order-b.order)
+    .map(({ order, ...meta })=>meta);
+}
+
+function dataUrlToBlob(dataUrl){
+  if(typeof dataUrl !== 'string' || !dataUrl.startsWith('data:')) return null;
+  const parts = dataUrl.split(',');
+  if(parts.length < 2) return null;
+  const mime = (parts[0].match(/data:([^;]+)/)||[])[1] || 'image/jpeg';
+  const bin = atob(parts[1]);
+  const bytes = new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type:mime });
+}
+
+async function ensureUploadBlob(photo, category){
+  if(photo?.compressed instanceof Blob) return photo.compressed;
+  if(photo?.file instanceof Blob){
+    try{
+      const converted = await compressImage(photo.file);
+      photo.compressed = converted.blob;
+      photo.dataUrl = converted.dataUrl;
+      photo.width = converted.width;
+      photo.height = converted.height;
+      photo.status = 'ready';
+      renderThumbs(category);
+      if(photo.compressed instanceof Blob) return photo.compressed;
+    }catch(e){
+      return photo.file;
+    }
+  }
+  const fromDataUrl = dataUrlToBlob(photo?.dataUrl);
+  if(fromDataUrl) return fromDataUrl;
+  throw new Error(`รูป${CAT_LABEL[category]||category}บางรูปยังไม่พร้อมอัปโหลด กรุณาลบรูปนั้นแล้วเลือกใหม่`);
+}
+
+async function saveDraft(){
+  const report = collectReportDraft();
+  const allPhotos = allPhotoEntries();
+  if(allPhotos.some(p=>p.status==='compressing')){ alert('กรุณารอรูปบีบอัดเสร็จก่อน'); return; }
+  document.getElementById('draft-btn').disabled = true;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('upload-status').textContent = 'กำลังบันทึกฉบับร่าง...';
+  document.getElementById('upload-detail').textContent = allPhotos.length ? 'กำลังอัปโหลดรูปที่เพิ่มไว้' : '';
+  document.getElementById('overlay-upload').classList.add('show');
+  try{
+    const uploadedImages = await collectUploadedImages(report);
+    const uploadedDocumentImages = await collectUploadedImages(report, ['documents']);
+    document.getElementById('upload-status').textContent = 'กำลังบันทึกข้อมูล...';
+    document.getElementById('upload-detail').textContent = '';
+    const job = await loadJobRecord(JOB_ID);
+    if(!job) throw new Error('ไม่พบงานนี้ในระบบหลัก');
+    const savedAt = new Date().toISOString();
+    const draftStatus = 'ช่างบันทึกร่าง';
+    const { reportId } = await upsertTechnicianReportTables(job, report, {
+      images: uploadedImages,
+      documentImages: uploadedDocumentImages,
+      savedAt,
+      status: draftStatus,
+      reviewStatus: 'ฉบับร่าง',
+      isDraft: true,
+      eventType: 'draft_saved'
+    });
+    const patch = {
+      id: job.id || JOB_ID,
+      client: job.client || '',
+      branch: job.branch || '',
+      ref: job.ref || job.client_ref || '',
+      type: job.type || job.job_type || '',
+      team: job.team || '',
+      date: job.date || job.scheduled_date || '',
+      note: job.note || '',
+      status: draftStatus,
+      techUpdateUnread: true,
+      techUpdateAt: savedAt,
+      techUpdateType: 'draft_saved',
+      dateIn: report.dateIn,
+      timeIn: report.timeIn,
+      dateDone: report.dateDone,
+      timeDone: report.timeDone,
+      symptom: report.symptom,
+      cause: report.cause,
+      fix: report.fix,
+      report: report.fix,
+      partsUsed: report.parts,
+      partsStructured: report.partsStructured||[],
+      note2: report.note,
+      reportReviewStatus: 'ฉบับร่าง',
+      technicianReport: { ...report, reportId, imageCount: uploadedImages.length, documentImageCount: uploadedDocumentImages.length, draftSavedAt:savedAt, isDraft:true, reviewStatus:'ฉบับร่าง' }
+    };
+    await patchJobAfterTechReport(job.id || JOB_ID, patch, { savedAt, statuses:[draftStatus], adminTaskNote:'ช่างบันทึกฉบับร่าง' });
+    jobData = { ...job, ...patch };
+    document.getElementById('overlay-upload').classList.remove('show');
+    alert('บันทึกฉบับร่างแล้ว กลับมาเปิดลิงก์นี้เพื่อกรอกต่อได้');
+  }catch(e){
+    document.getElementById('overlay-upload').classList.remove('show');
+    alert('บันทึกฉบับร่างไม่สำเร็จ: ' + e.message);
+  }finally{
+    document.getElementById('draft-btn').disabled = false;
+    document.getElementById('submit-btn').disabled = false;
+  }
+}
+
+async function submitJob(){
+  // validate text fields
+  const report = collectReportDraft();
+  if(!report.dateIn){ alert('กรุณาเลือกวันที่เข้าจริง'); document.getElementById('f-date-in').focus(); return; }
+  if(!report.timeIn){ alert('กรุณาเลือกเวลาเข้าจริง'); document.getElementById('f-time-in').focus(); return; }
+  if(!report.needQuote && !report.dateDone){ alert('กรุณาเลือกวันที่เสร็จงาน'); document.getElementById('f-date-done').focus(); return; }
+  if(!report.needQuote && !report.timeDone){ alert('กรุณาเลือกเวลาเสร็จงาน'); document.getElementById('f-time-done').focus(); return; }
+  if(!report.cause){ alert('กรุณากรอกสาเหตุ'); document.getElementById('f-cause').focus(); return; }
+  if(!report.fix){ alert('กรุณากรอกวิธีแก้ไข'); document.getElementById('f-fix').focus(); return; }
+  if(!report.noParts && !report.parts){ alert('กรุณากรอกอะไหล่ที่ใช้ หรือติ๊ก "ไม่มีการใช้อะไหล่"'); document.getElementById('f-parts').focus(); return; }
+
+  // validate photo minimums
+  for(const cat of ['before','during','after']){
+    if(report.needQuote && cat !== 'before') continue;
+    if(noPhoto[cat]) continue;
+    if(photos[cat].length < PHOTO_MIN[cat]){
+      alert(`รูป${CAT_LABEL[cat]} ต้องมีอย่างน้อย ${PHOTO_MIN[cat]} รูป (ตอนนี้มี ${photos[cat].length} รูป)`);
+      return;
+    }
+  }
+
+  // wait for any compressing
+  const allPhotos = allPhotoEntries();
+  if(allPhotos.some(p=>p.status==='compressing')){ alert('กรุณารอรูปบีบอัดเสร็จก่อน'); return; }
+
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('draft-btn').disabled = true;
+  document.getElementById('upload-status').textContent = 'กำลังส่งงาน...';
+  document.getElementById('upload-detail').textContent = 'กำลังบีบอัดและอัปโหลดรูป';
+  document.getElementById('overlay-upload').classList.add('show');
+
+  try{
+    // 1. upload photos (ผ่าน Cloudflare Worker → R2)
+    const uploadedImages = await collectUploadedImages(report);
+    const uploadedDocumentImages = await collectUploadedImages(report, ['documents']);
+
+    // 2. save report + image metadata to Supabase
+    document.getElementById('upload-status').textContent = 'กำลังบันทึกข้อมูล...';
+    document.getElementById('upload-detail').textContent = '';
+    const job = await loadJobRecord(JOB_ID);
+    if(!job) throw new Error('ไม่พบงานนี้ในระบบหลัก');
+    const submittedAt = new Date().toISOString();
+    const nextStatus = report.needQuote ? 'รออนุมัติอะไหล่' : 'ช่างส่งงานแล้ว';
+    const nextReview = report.needQuote ? 'รออนุมัติอะไหล่' : 'รอตรวจ';
+    const nextRound = {
+      id: `${report.needQuote ? 'survey' : 'repair'}-${Date.now()}`,
+      type: report.needQuote ? 'survey' : 'repair',
+      label: report.needQuote ? 'สำรวจ' : 'ซ่อมจริง',
+      submittedAt,
+      status: nextStatus,
+      dateIn: report.dateIn,
+      timeIn: report.timeIn,
+      dateDone: report.dateDone,
+      timeDone: report.timeDone,
+      cause: report.cause,
+      fix: report.fix,
+      parts: report.parts,
+      partsStructured: report.partsStructured||[],
+      note: report.note,
+      imageIds: uploadedImages.map(im=>im.id)
+    };
+    const { reportId } = await upsertTechnicianReportTables(job, report, {
+      images: uploadedImages,
+      documentImages: uploadedDocumentImages,
+      savedAt: submittedAt,
+      status: nextStatus,
+      reviewStatus: nextReview,
+      isDraft: false,
+      roundId: nextRound.id,
+      eventType: report.needQuote ? 'parts_quote_needed' : 'submitted'
+    });
+    const patch = {
+      id: job.id || JOB_ID,
+      client: job.client || '',
+      branch: job.branch || '',
+      ref: job.ref || job.client_ref || '',
+      type: job.type || job.job_type || '',
+      team: job.team || '',
+      date: job.date || job.scheduled_date || '',
+      note: job.note || '',
+      status: nextStatus,
+      techUpdateUnread: true,
+      techUpdateAt: submittedAt,
+      techUpdateType: report.needQuote ? 'parts_quote_needed' : 'submitted',
+      dateIn: report.dateIn,
+      timeIn: report.timeIn,
+      dateDone: report.dateDone,
+      timeDone: report.timeDone,
+      symptom: report.symptom,
+      cause: report.cause,
+      fix: report.fix,
+      report: report.fix,
+      partsUsed: report.parts,
+      partsStructured: report.partsStructured||[],
+      note2: report.note,
+      techSubmittedAt: submittedAt,
+      reportReviewStatus: nextReview,
+      reviewNote: '',
+      reportRounds: [...(job.reportRounds||[]), nextRound],
+      technicianReport: { ...report, reportId, imageCount: uploadedImages.length, documentImageCount: uploadedDocumentImages.length, rounds:[...(job.technicianReport?.rounds||[]), nextRound], submittedAt, draftSavedAt:'', isDraft:false, reviewStatus:nextReview, reviewNote:'' }
+    };
+    await patchJobAfterTechReport(job.id || JOB_ID, patch, {
+      savedAt: submittedAt,
+      statuses:[nextStatus],
+      adminTaskNote: report.needQuote ? 'ช่างสำรวจแล้ว ต้องเสนอราคาอะไหล่ก่อนซ่อม' : 'ช่างส่งงานแล้ว'
+    });
+    Object.assign(job, patch);
+
+    // 3. notify LINE (ผ่าน Worker)
+    notifyLine(report, { before:photos.before.length, during:photos.during.length, after:photos.after.length });
+
+    // success
+    document.getElementById('overlay-upload').classList.remove('show');
+    document.getElementById('overlay-success').classList.add('show');
+  }catch(e){
+    document.getElementById('overlay-upload').classList.remove('show');
+    document.getElementById('submit-btn').disabled = false;
+    document.getElementById('draft-btn').disabled = false;
+    alert('เกิดข้อผิดพลาดในการส่ง: ' + e.message + '\nกรุณาลองใหม่');
+  }
+}
+
+async function uploadPhoto(blob, category, index, photo){
+  if(!UPLOAD_ENDPOINT.startsWith('http')){
+    throw new Error('ยังไม่ได้ตั้งค่า Cloudflare Worker สำหรับอัปโหลดรูป');
+  }
+  if(!(blob instanceof Blob)){
+    throw new Error(`รูป${CAT_LABEL[category]||category}ไม่ใช่ไฟล์รูปที่อัปโหลดได้ กรุณาเลือกรูปใหม่`);
+  }
+  const fd = new FormData();
+  fd.append('file', blob, `${category}_${index}.jpg`);
+  fd.append('job_id', JOB_ID);
+  fd.append('category', category);
+  fd.append('token', TOKEN);
+  const res = await fetch(UPLOAD_ENDPOINT, { method:'POST', body:fd });
+  if(!res.ok) throw new Error('อัปโหลดรูปไม่สำเร็จ');
+  const data = await res.json();
+  const url = data.url || data.fileUrl || '';
+  if(!url) throw new Error('อัปโหลดรูปสำเร็จแต่ไม่ได้รับ URL รูป');
+  return { url, storage:data.storage || 'external' };
+}
+
+async function notifyLine(report, counts){
+  if(!UPLOAD_ENDPOINT.startsWith('http')) return; // demo
+  try{
+    await fetch(UPLOAD_ENDPOINT.replace(/\/upload\/?$/,'') + '/notify', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        job_id: JOB_ID, team: jobData.team, branch: jobData.branch,
+        counts, token: TOKEN,
+      })
+    });
+  }catch(e){ console.warn('Line notify failed (non-critical)', e); }
+}
+
+// START
+loadJob();
+</script>
+</body>
+</html>

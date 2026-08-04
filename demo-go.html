@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>กำลังเปิดฟอร์มงานช่าง…</title>
+<style>
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0d1117;color:#e6edf3;font-family:"Noto Sans Thai",system-ui,sans-serif;}
+  .box{text-align:center;padding:28px 22px;}
+  .spinner{width:38px;height:38px;border:4px solid #30363d;border-top-color:#58a6ff;border-radius:50%;margin:0 auto 16px;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  a{color:#58a6ff;}
+  .err{color:#f85149;}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="spinner" id="sp"></div>
+  <div id="msg">กำลังเปิดฟอร์มงานช่าง…</div>
+</div>
+<script>
+const SUPABASE_URL='https://mghlmsckdvmdqrxtdfbi.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1naGxtc2NrZHZtZHFyeHRkZmJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTI1NDEsImV4cCI6MjEwMTM4ODU0MX0.ywWlKVOAG6m-rr7MhJaJzbRLNXJkO7AeC6sJJlV5FsY';
+const headers={'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json'};
+function showError(html){document.getElementById('sp').style.display='none';document.getElementById('msg').innerHTML=html;}
+// โดเมนที่เราเป็นเจ้าของและอนุญาตให้ redirect ไปได้ (เช็คแค่ hostname ไม่สนใจ http/https กันปัญหาช่วง SSL ของโดเมนใหม่ยังไม่พร้อม)
+const ALLOWED_HOSTS=['demo.profixsolution-service.com','profixsolution-team.github.io','www.profixsolution-service.com','profixsolution-service.com'];
+function safeTarget(t){
+  try{const u=new URL(t,location.href);if(!ALLOWED_HOSTS.includes(u.hostname))return null;return u.href;}catch(e){return null;}
+}
+(async()=>{
+  const code=new URLSearchParams(location.search).get('c');
+  if(!code){showError('<span class="err">ลิงก์ไม่ถูกต้อง</span>');return;}
+  let target=null;
+  // นับคลิกแบบ atomic + ได้ target กลับมา
+  try{
+    const r=await fetch(SUPABASE_URL+'/rest/v1/rpc/profix_short_link_hit',{method:'POST',headers,body:JSON.stringify({p_code:code})});
+    if(r.ok){const v=await r.json();if(typeof v==='string')target=v;}
+  }catch(e){}
+  // สำรอง: ถ้า RPC ใช้ไม่ได้ ดึง target ตรงๆ
+  if(!target){
+    try{
+      const r=await fetch(SUPABASE_URL+'/rest/v1/short_links?code=eq.'+encodeURIComponent(code)+'&select=target&limit=1',{headers});
+      if(r.ok){const rows=await r.json();target=rows&&rows[0]&&rows[0].target;}
+    }catch(e){}
+  }
+  const safe=target&&safeTarget(target);
+  if(safe){location.replace(safe);}
+  else showError('<span class="err">ไม่พบลิงก์นี้ หรือหมดอายุแล้ว</span>');
+})();
+</script>
+</body>
+</html>

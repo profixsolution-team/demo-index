@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>แจ้งเข้าซ่อม — ProFix</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2358a6ff'/><text x='50' y='72' font-size='60' font-family='Arial' font-weight='bold' fill='%230d1117' text-anchor='middle'>P</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d1117;--surface:#161b22;--surface2:#1f2937;--surface3:#273344;--border:#30363d;--border2:#3d4754;--accent:#58a6ff;--accent-dim:#1a3a5c;--green:#3fb950;--green-dim:#1a3a1f;--yellow:#d29922;--yellow-dim:#3a2a0a;--red:#f85149;--red-dim:#3a0f0f;--text:#e6edf3;--text2:#8b949e;--text3:#6e7681;--mono:"IBM Plex Mono",monospace;--sans:"Noto Sans Thai",sans-serif;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;min-height:100vh;padding-bottom:40px;}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px;}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 16px;position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:10px;}
+.logo-badge{width:32px;height:32px;border-radius:8px;background:var(--accent);color:#0d1117;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:18px;font-family:var(--mono);}
+.logo-txt{font-family:var(--mono);font-weight:700;font-size:13px;color:var(--accent);letter-spacing:1px;}
+.logo-sub{font-size:11px;color:var(--text3);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:18px;margin-top:16px;}
+.job-head{background:linear-gradient(135deg,#1a2a3a,#161b22);border:1px solid var(--accent-dim);}
+.job-id{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--accent);}
+.job-meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px;}
+.meta-label{font-size:10px;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px;}
+.meta-val{font-size:14px;font-weight:600;}
+.sec-title{font-weight:700;font-size:15px;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.sec-sub{font-size:12px;color:var(--text2);margin-bottom:14px;}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600;}
+input,select,textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;color:var(--text);font-family:var(--sans);font-size:15px;outline:none;transition:border-color .15s;}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);}
+textarea{resize:vertical;min-height:64px;}
+.form-group{margin-bottom:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 20px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;border:none;font-family:var(--sans);transition:all .15s;width:100%;}
+.btn-primary{background:var(--accent);color:#0d1117;}
+.btn-primary:active{transform:scale(.98);}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--text2);}
+.req-star{color:var(--red);}
+.type-grid{display:flex;flex-wrap:wrap;gap:8px;}
+.type-chip{border:1px solid var(--border2);background:var(--bg);color:var(--text2);border-radius:20px;padding:9px 15px;font-size:13px;font-weight:600;cursor:pointer;user-select:none;transition:all .15s;}
+.type-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.sig-wrap{border:1px solid var(--border2);border-radius:10px;background:#fff;position:relative;overflow:hidden;touch-action:none;}
+.sig-wrap canvas{display:block;width:100%;height:200px;touch-action:none;}
+.sig-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;pointer-events:none;}
+.sig-tools{display:flex;justify-content:space-between;align-items:center;margin-top:8px;}
+.sig-hint{font-size:11px;color:var(--text3);}
+.readonly-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;font-size:13px;color:var(--text2);white-space:pre-wrap;min-height:20px;}
+.msg-box{max-width:420px;margin:60px auto;text-align:center;padding:0 20px;}
+.msg-box .ic{font-size:48px;margin-bottom:16px;}
+.hidden{display:none !important;}
+.overlay{display:none;position:fixed;inset:0;background:rgba(13,17,23,.92);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:20px;text-align:center;}
+.overlay.show{display:flex;}
+.big-spin{width:44px;height:44px;border:4px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+.spinner{width:16px;height:16px;border:2px solid rgba(0,0,0,.2);border-top-color:#0d1117;border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.summary-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.summary-row:last-child{border-bottom:0;}
+.summary-row .k{color:var(--text3);}
+.summary-row .v{font-weight:600;text-align:right;}
+.up-zone{border:2px dashed var(--border2);border-radius:10px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--bg);}
+.up-zone:active{border-color:var(--accent);background:var(--accent-dim);}
+.up-icon{font-size:28px;margin-bottom:6px;}
+.up-hint{font-size:12px;color:var(--text2);}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,72px);gap:8px;margin-top:12px;justify-content:start;}
+.thumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:var(--surface2);}
+.thumb img{width:100%;height:100%;object-fit:cover;}
+.thumb .rm{position:absolute;top:2px;right:2px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.7);color:#fff;border:none;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.thumb .pct{position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-family:var(--mono);}
+@media (min-width:480px){.thumbs{grid-template-columns:repeat(auto-fill,84px);}.thumb{width:84px;height:84px;}}
+</style>
+</head>
+<body>
+
+<div class="topbar wrap" style="max-width:100%;">
+  <div class="logo-badge">P</div>
+  <div>
+    <div class="logo-txt">PROFIX</div>
+    <div class="logo-sub">แจ้งเข้าซ่อม (ทดสอบ)</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- LOADING -->
+  <div id="state-loading" class="msg-box">
+    <div class="big-spin" style="margin:0 auto 16px;"></div>
+    <div style="color:var(--text2);">กำลังโหลดข้อมูลงาน...</div>
+  </div>
+
+  <!-- MANUAL JOB LOOKUP (no ?job= or not found) -->
+  <div id="state-manual" class="msg-box hidden">
+    <div class="ic">🔧</div>
+    <div style="font-weight:700;font-size:18px;margin-bottom:8px;" id="manual-title">ระบุเลขงาน</div>
+    <div style="color:var(--text2);font-size:14px;margin-bottom:16px;" id="manual-msg">กรอกเลข PR เพื่อดึงข้อมูลงาน หรือกรอกข้อมูลเองได้เลย</div>
+    <div style="display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;">
+      <input id="manual-job" placeholder="เช่น PR-001" onkeydown="if(event.key==='Enter')openManualJob()" style="width:min(100%,220px);height:44px;text-align:center;font-weight:700;">
+      <button class="btn btn-primary" onclick="openManualJob()" style="width:auto;padding:0 16px;">ค้นหา</button>
+    </div>
+    <div style="margin-top:14px;">
+      <button class="btn btn-ghost" onclick="skipToForm()" style="width:auto;padding:0 16px;">ไม่มีเลข PR — กรอกเอง</button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div id="state-done" class="msg-box hidden">
+    <div class="ic">✅</div>
+    <div style="font-weight:700;font-size:20px;margin-bottom:6px;">ยืนยันการเข้างานแล้ว</div>
+    <div style="color:var(--text2);font-size:14px;margin-bottom:18px;">บันทึกข้อมูลและลายเซ็นเรียบร้อย</div>
+    <div class="card" style="text-align:left;" id="done-summary"></div>
+    <div style="margin-top:16px;">
+      <button class="btn btn-ghost" onclick="location.reload()" style="width:auto;padding:0 16px;">แจ้งเข้าซ่อมงานใหม่</button>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="state-form" class="hidden">
+
+    <div class="card job-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+        <div class="job-id" id="j-id">— ไม่ผูกกับ PR —</div>
+      </div>
+      <div class="job-meta">
+        <div><div class="meta-label">ลูกค้า</div><div class="meta-val" id="j-client">—</div></div>
+        <div><div class="meta-label">สาขา</div><div class="meta-val" id="j-branch">—</div></div>
+        <div><div class="meta-label">ทีมช่าง</div><div class="meta-val" id="j-team">—</div></div>
+        <div><div class="meta-label">วันนัด</div><div class="meta-val" id="j-date">—</div></div>
+      </div>
+      <div class="form-group" id="j-note-wrap" style="margin-top:14px;margin-bottom:0;">
+        <label>รายละเอียดที่แจ้งซ่อม (จากแอดมิน)</label>
+        <div class="readonly-box" id="j-note">—</div>
+      </div>
+    </div>
+
+    <div class="card" id="manual-fields" style="display:none;">
+      <div class="sec-title">📋 ข้อมูลงาน</div>
+      <div class="sec-sub">ไม่พบ PR ในระบบ กรุณากรอกข้อมูลเอง</div>
+      <div class="form-group"><label>PR / เลขงาน</label><input id="m-job-id" placeholder="เช่น PR-001"></div>
+      <div class="form-row">
+        <div class="form-group"><label>ลูกค้า</label><input id="m-client" placeholder="ชื่อลูกค้า"></div>
+        <div class="form-group"><label>สาขา</label><input id="m-branch" placeholder="ชื่อสาขา"></div>
+      </div>
+      <div class="form-group"><label>รายละเอียดที่แจ้งซ่อม</label><textarea id="m-note" placeholder="อาการ / สิ่งที่ลูกค้าแจ้ง"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">🛠️ ประเภทงาน <span class="req-star">*</span></div>
+      <div class="sec-sub">แตะเลือกได้มากกว่า 1 ประเภท</div>
+      <div class="type-grid" id="type-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">🕐 เวลาเข้า-ออกหน้างาน</div>
+      <div class="sec-sub">ยืนยันช่วงเวลาที่เข้าปฏิบัติงาน</div>
+      <div class="form-row">
+        <div class="form-group"><label>วันที่เข้า <span class="req-star">*</span></label><input type="date" id="f-date-in"></div>
+        <div class="form-group"><label>เวลาเข้า <span class="req-star">*</span></label><input type="time" id="f-time-in" step="300"></div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:14px;cursor:pointer;">
+        <input type="checkbox" id="f-done-toggle" style="width:auto;" onchange="toggleDoneFields()"> งานเสร็จแล้ว ณ ตอนนี้
+      </label>
+      <div class="form-row" id="done-fields" style="display:none;">
+        <div class="form-group"><label>วันที่เสร็จ</label><input type="date" id="f-date-done"></div>
+        <div class="form-group"><label>เวลาเสร็จ</label><input type="time" id="f-time-done" step="300"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">📷 รูปตรวจเช็ก <span class="req-star">*</span></div>
+      <div class="sec-sub">ถ่าย/อัปรูปตอนตรวจเช็กหน้างาน (บังคับ อย่างน้อย 1 รูป · เลือกได้หลายรูป ไม่จำกัด)</div>
+      <div class="up-zone" onclick="document.getElementById('inp-checkin').click()">
+        <div class="up-icon">📸</div>
+        <div class="up-hint">แตะเพื่อถ่ายรูป หรือเลือกหลายรูปจากเครื่อง</div>
+      </div>
+      <input type="file" id="inp-checkin" accept="image/*" multiple style="display:none" onchange="addCheckinPhotos(Array.from(this.files));this.value='';">
+      <div class="thumbs" id="th-checkin"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">📝 หมายเหตุเพิ่มเติม</div>
+      <div class="sec-sub">ไม่บังคับ — ระบุสั้น ๆ ถ้ามี</div>
+      <div class="form-group" style="margin-bottom:0;"><textarea id="f-note" placeholder="เช่น รออะไหล่, นัดเข้าซ่อมรอบถัดไป ฯลฯ"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">✍️ ลายเซ็นลูกค้า / ผู้แจ้ง <span class="req-star">*</span></div>
+      <div class="sec-sub">ให้ลูกค้า/ผู้แจ้งเซ็นยืนยันการเข้างานบนหน้าจอ</div>
+      <div class="form-row">
+        <div class="form-group"><label>ชื่อผู้เซ็น <span class="req-star">*</span></label><input id="f-signer-name" placeholder="ชื่อ-นามสกุล"></div>
+        <div class="form-group">
+          <label>บทบาท</label>
+          <select id="f-signer-role">
+            <option value="ลูกค้า/ผู้แจ้ง">ลูกค้า/ผู้แจ้ง</option>
+            <option value="ผจก.สาขา">ผจก.สาขา</option>
+            <option value="อื่นๆ">อื่นๆ</option>
+          </select>
+        </div>
+      </div>
+      <div class="sig-wrap" id="sig-wrap-customer">
+        <canvas id="sig-canvas-customer"></canvas>
+        <div class="sig-placeholder" id="sig-placeholder-customer">แตะ/ลากนิ้วเพื่อเซ็นชื่อ</div>
+      </div>
+      <div class="sig-tools">
+        <div class="sig-hint">ลายเซ็นลูกค้า/ผู้แจ้ง</div>
+        <button class="btn btn-ghost" type="button" onclick="clearSignature('customer')" style="width:auto;padding:8px 14px;font-size:13px;">ล้างลายเซ็น</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec-title">🛠️ ลายเซ็นช่างผู้เข้างาน <span class="req-star">*</span></div>
+      <div class="sec-sub">ช่างเซ็นยืนยันว่าเป็นผู้เข้าปฏิบัติงาน</div>
+      <div class="form-group"><label>ชื่อช่าง <span class="req-star">*</span></label><input id="f-tech-name" placeholder="ชื่อ-นามสกุล ช่าง"></div>
+      <div class="sig-wrap" id="sig-wrap-tech">
+        <canvas id="sig-canvas-tech"></canvas>
+        <div class="sig-placeholder" id="sig-placeholder-tech">แตะ/ลากนิ้วเพื่อเซ็นชื่อ</div>
+      </div>
+      <div class="sig-tools">
+        <div class="sig-hint">ลายเซ็นช่าง</div>
+        <button class="btn btn-ghost" type="button" onclick="clearSignature('tech')" style="width:auto;padding:8px 14px;font-size:13px;">ล้างลายเซ็น</button>
+      </div>
+    </div>
+
+    <div style="margin-top:18px;">
+      <button class="btn btn-primary" id="btn-submit" onclick="submitCheckin()">✓ ยืนยันการเข้างาน</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="big-spin"></div>
+  <div style="font-weight:700;">กำลังบันทึก...</div>
+</div>
+
+<script>
+// ============================================================
+// STANDALONE PAGE — แจ้งเข้าซ่อม / เซ็นยืนยันการเข้างาน
+// ไม่เชื่อมกับ technician-submit.html หรือ jobs.status ใด ๆ ทั้งสิ้น
+// อ่าน jobs table แบบ read-only (ถ้ามี ?job=) แล้วบันทึกลงตาราง job_checkins ของตัวเอง
+// ============================================================
+const SUPABASE_URL = 'https://mghlmsckdvmdqrxtdfbi.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1naGxtc2NrZHZtZHFyeHRkZmJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTI1NDEsImV4cCI6MjEwMTM4ODU0MX0.ywWlKVOAG6m-rr7MhJaJzbRLNXJkO7AeC6sJJlV5FsY';
+function sbHeaders(extra={}){ return { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer '+SUPABASE_ANON_KEY, 'Content-Type':'application/json', ...extra }; }
+function normId(v){ return String(v||'').trim().toUpperCase().replace(/[^A-Z0-9ก-๙]/g,''); }
+// Cloudflare Worker endpoint สำหรับอัปรูปเข้า R2 — ระบบเดียวกับหน้า submit
+const UPLOAD_ENDPOINT = 'https://profix-r2-upload-worker.profixsolution-team.workers.dev/upload';
+const CHECKIN_UPLOAD_CONCURRENCY = 3;
+let checkinPhotos = []; // {id, file, dataUrl, status, url, width, height, existing} — ไม่จำกัดจำนวน
+let existingCheckin = null; // record checkin ล่าสุดของงานนี้ (ถ้ามี) → บันทึกทับ ไม่สร้างซ้ำ
+
+const params = new URLSearchParams(location.search);
+let JOB_ID = params.get('job') || params.get('pr') || '';
+let jobRecord = null; // ข้อมูล job ที่อ่านมาโชว์เฉย ๆ (read-only)
+let manualMode = false;
+
+const JOB_TYPES = ['ตรวจเช็ก','ซ่อม','บำรุงรักษา (PM)','ติดตั้ง','เปลี่ยนอะไหล่','อื่นๆ'];
+let selectedTypes = new Set();
+
+function renderTypeGrid(){
+  const box = document.getElementById('type-grid');
+  box.innerHTML = JOB_TYPES.map(t=>`<div class="type-chip" data-t="${t}" onclick="toggleType('${t.replace(/'/g,"\\'")}')">${t}</div>`).join('');
+}
+function toggleType(t){
+  if(selectedTypes.has(t)) selectedTypes.delete(t); else selectedTypes.add(t);
+  [...document.querySelectorAll('.type-chip')].forEach(el=>el.classList.toggle('active', selectedTypes.has(el.dataset.t)));
+}
+function toggleDoneFields(){
+  document.getElementById('done-fields').style.display = document.getElementById('f-done-toggle').checked ? 'grid' : 'none';
+}
+
+// ---------- โหลดข้อมูลงาน (read-only, ค้นหาแบบยืดหยุ่นเหมือนฟอร์มช่าง) ----------
+async function findJobById(id){
+  const clean = String(id||'').trim();
+  if(!clean) return null;
+  try{
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=eq.${encodeURIComponent(clean)}&select=id,data`, { headers: sbHeaders() });
+    if(r.ok){ const rows = await r.json(); if(rows?.[0]?.data) return rows[0].data; }
+  }catch(e){ console.warn('exact lookup failed', e); }
+  try{
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=ilike.${encodeURIComponent(clean)}&select=id,data`, { headers: sbHeaders() });
+    if(r.ok){ const rows = await r.json(); const row = rows.find(x=>normId(x.id)===normId(clean)); if(row?.data) return row.data; }
+  }catch(e){ console.warn('ilike lookup failed', e); }
+  try{
+    const digits = (clean.match(/\d+/g)||[]).sort((a,b)=>b.length-a.length)[0] || '';
+    if(digits.length >= 3){
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/jobs?id=ilike.*${encodeURIComponent(digits)}*&select=id,data`, { headers: sbHeaders() });
+      if(r.ok){
+        const rows = await r.json();
+        const row = rows.find(x=>normId(x.id)===normId(clean)) || (rows.length===1 ? rows[0] : null);
+        if(row?.data) return row.data;
+      }
+    }
+  }catch(e){ console.warn('fuzzy lookup failed', e); }
+  return null;
+}
+
+async function init(){
+  renderTypeGrid();
+  setupSignaturePad();
+  const now = new Date();
+  document.getElementById('f-date-in').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  document.getElementById('f-time-in').value = `${String(now.getHours()).padStart(2,'0')}:${String(Math.floor(now.getMinutes()/5)*5).padStart(2,'0')}`;
+
+  if(!JOB_ID){
+    document.getElementById('state-loading').classList.add('hidden');
+    document.getElementById('manual-title').textContent = 'ระบุเลขงาน';
+    document.getElementById('manual-msg').textContent = 'กรอกเลข PR เพื่อดึงข้อมูลงาน หรือกรอกข้อมูลเองได้เลย';
+    document.getElementById('state-manual').classList.remove('hidden');
+    return;
+  }
+  const job = await findJobById(JOB_ID);
+  if(!job){
+    const rec = await loadLatestCheckin(JOB_ID, { prefill:false });
+    if(rec){
+      manualMode = true;
+      document.getElementById('state-loading').classList.add('hidden');
+      document.getElementById('state-form').classList.remove('hidden');
+      document.getElementById('manual-fields').style.display = 'block';
+      document.getElementById('j-note-wrap').style.display = 'none';
+      prefillFromCheckin(rec);
+      resizeSigPads();
+      return;
+    }
+    document.getElementById('state-loading').classList.add('hidden');
+    document.getElementById('manual-title').textContent = 'ไม่พบงานนี้';
+    document.getElementById('manual-msg').textContent = `ค้นหา PR: ${JOB_ID} แล้วไม่พบ — ลองใหม่หรือกรอกข้อมูลเอง`;
+    document.getElementById('manual-job').value = JOB_ID;
+    document.getElementById('state-manual').classList.remove('hidden');
+    return;
+  }
+  jobRecord = job;
+  showFormFromJob(job);
+  // ดึง checkin ครั้งล่าสุดของงานนี้มา prefill (รูป/ลายเซ็น/ข้อมูล) — จะได้ไม่ต้องอัปซ้ำ/เซ็นใหม่
+  await loadLatestCheckin(job.id || JOB_ID);
+}
+
+// โหลด checkin ครั้งล่าสุดของ job นี้ แล้วเติมข้อมูลกลับเข้าฟอร์ม
+async function loadLatestCheckin(jobId, opts={}){
+  if(!jobId) return null;
+  const shouldPrefill = opts.prefill !== false;
+  const clean = String(jobId||'').trim();
+  const digitKey = (clean.match(/\d+/g) || []).sort((a,b)=>b.length-a.length)[0] || '';
+  const fetchRows = async query => {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/job_checkins${query}`, { headers: sbHeaders() });
+    if(!r.ok) throw new Error(await r.text());
+    return await r.json();
+  };
+  try{
+    let rows = await fetchRows(`?job_id=eq.${encodeURIComponent(clean)}&select=*&order=created_at.desc&limit=1`);
+    if(!rows?.length && digitKey.length >= 3){
+      rows = await fetchRows(`?job_id=ilike.*${encodeURIComponent(digitKey)}*&select=*&order=created_at.desc&limit=20`);
+      rows = rows.filter(r=>normId(r.job_id)===normId(clean) || (rows.length===1 && String(r.job_id||'').includes(digitKey)));
+    }
+    const rec = Array.isArray(rows) ? rows[0] : null;
+    if(!rec) return null;
+    existingCheckin = rec;
+    if(shouldPrefill) prefillFromCheckin(rec);
+    return rec;
+  }catch(e){ console.warn('load latest checkin failed', e); return null; }
+}
+function prefillFromCheckin(rec){
+  const jobId = jobRecord?.id || rec.job_id || JOB_ID || '';
+  const latestClient = jobRecord?.client || rec.client_snapshot || '';
+  const latestBranch = jobRecord?.branch || rec.branch_snapshot || '';
+  const latestNote = jobRecord?.note || rec.reported_note || '';
+  document.getElementById('j-id').textContent = jobId || '— ไม่ผูกกับ PR —';
+  document.getElementById('j-client').textContent = latestClient || '—';
+  document.getElementById('j-branch').textContent = latestBranch || '—';
+  document.getElementById('j-note').textContent = latestNote || 'ไม่มีรายละเอียดจากแอดมิน';
+  const manualJob = document.getElementById('m-job-id'); if(manualJob) manualJob.value = jobId;
+  const manualClient = document.getElementById('m-client'); if(manualClient) manualClient.value = latestClient;
+  const manualBranch = document.getElementById('m-branch'); if(manualBranch) manualBranch.value = latestBranch;
+  const manualNote = document.getElementById('m-note'); if(manualNote) manualNote.value = latestNote;
+  // ประเภทงาน
+  selectedTypes = new Set();
+  (Array.isArray(rec.job_type)?rec.job_type:[]).forEach(t=>{ if(JOB_TYPES.includes(t)) selectedTypes.add(t); });
+  [...document.querySelectorAll('.type-chip')].forEach(el=>el.classList.toggle('active', selectedTypes.has(el.dataset.t)));
+  // วัน/เวลา
+  if(rec.date_in) document.getElementById('f-date-in').value = rec.date_in;
+  if(rec.time_in) document.getElementById('f-time-in').value = rec.time_in;
+  if(rec.date_done || rec.time_done){
+    document.getElementById('f-done-toggle').checked = true;
+    toggleDoneFields();
+    if(rec.date_done) document.getElementById('f-date-done').value = rec.date_done;
+    if(rec.time_done) document.getElementById('f-time-done').value = rec.time_done;
+  }
+  if(rec.note) document.getElementById('f-note').value = rec.note;
+  // ผู้เซ็น + ช่าง
+  if(rec.signer_name) document.getElementById('f-signer-name').value = rec.signer_name;
+  if(rec.signer_role) document.getElementById('f-signer-role').value = rec.signer_role;
+  if(rec.tech_name) document.getElementById('f-tech-name').value = rec.tech_name;
+  // ลายเซ็น (วาดรูปเดิมลง canvas + mark ว่ามีลายเซ็นแล้ว)
+  loadSignatureIntoPad('customer', rec.signature_data);
+  loadSignatureIntoPad('tech', rec.tech_signature_data);
+  // รูปตรวจเช็กเดิม (existing → ไม่อัปซ้ำตอนบันทึก)
+  checkinPhotos = [];
+  const ph = Array.isArray(rec.photos) ? rec.photos : [];
+  ph.forEach((p,i)=>{
+    if(!p || !p.url) return;
+    checkinPhotos.push({ id:'old-'+i, url:p.url, dataUrl:p.url, status:'ready', existing:true, width:p.width||0, height:p.height||0, storage:p.storage||'external' });
+  });
+  renderCheckinThumbs();
+}
+function loadSignatureIntoPad(key, dataUrl){
+  const pad = sigPads[key];
+  if(!pad || !dataUrl) return;
+  const draw = ()=>{
+    const rect = pad.canvas.getBoundingClientRect();
+    if(!rect.width || !pad.ctx){ setTimeout(draw, 120); return; } // ฟอร์มยังไม่ได้ขนาด รอแล้วลองใหม่
+    const img = new Image();
+    img.onload = ()=>{
+      pad.ctx.drawImage(img, 0, 0, rect.width, 200);
+      pad.hasStroke = true;
+      const p = document.getElementById('sig-placeholder-'+key); if(p) p.style.display = 'none';
+    };
+    img.src = dataUrl;
+  };
+  draw();
+}
+
+function openManualJob(){
+  const v = document.getElementById('manual-job').value.trim();
+  if(!v){ alert('กรุณากรอกเลข PR'); return; }
+  location.href = `${location.pathname}?job=${encodeURIComponent(v)}`;
+}
+function skipToForm(){
+  manualMode = true;
+  document.getElementById('state-manual').classList.add('hidden');
+  document.getElementById('state-form').classList.remove('hidden');
+  document.getElementById('manual-fields').style.display = 'block';
+  document.getElementById('j-note-wrap').style.display = 'none';
+  resizeSigPads();
+  const manualJob = document.getElementById('manual-job').value.trim();
+  if(manualJob){
+    document.getElementById('m-job-id').value = manualJob;
+    loadLatestCheckin(manualJob);
+  }
+}
+
+function showFormFromJob(job){
+  document.getElementById('state-loading').classList.add('hidden');
+  document.getElementById('state-form').classList.remove('hidden');
+  document.getElementById('j-id').textContent = job.id || JOB_ID;
+  document.getElementById('j-client').textContent = job.client || '—';
+  document.getElementById('j-branch').textContent = job.branch || '—';
+  document.getElementById('j-team').textContent = job.team || '—';
+  document.getElementById('j-date').textContent = job.date || '—';
+  document.getElementById('j-note').textContent = job.note || 'ไม่มีรายละเอียดจากแอดมิน';
+  if(job.type && JOB_TYPES.includes(job.type)) toggleType(job.type);
+  resizeSigPads();
+}
+
+// ---------- ลายเซ็น (canvas, รองรับหลายช่อง นิ้ว/เมาส์) ----------
+const sigPads = {};
+function createSigPad(key){
+  const canvas = document.getElementById('sig-canvas-'+key);
+  const wrap = document.getElementById('sig-wrap-'+key);
+  const placeholder = document.getElementById('sig-placeholder-'+key);
+  const pad = { canvas, ctx:null, drawing:false, hasStroke:false, last:null, resize:null };
+  function resize(){
+    const rect = wrap.getBoundingClientRect();
+    if(!rect.width) return; // ฟอร์มยังซ่อนอยู่ ค่อย resize ตอนโชว์
+    const ratio = window.devicePixelRatio || 1;
+    const prevData = pad.hasStroke ? canvas.toDataURL() : null;
+    canvas.width = rect.width * ratio;
+    canvas.height = 200 * ratio;
+    pad.ctx = canvas.getContext('2d');
+    pad.ctx.scale(ratio, ratio);
+    pad.ctx.lineWidth = 2.4;
+    pad.ctx.lineCap = 'round';
+    pad.ctx.lineJoin = 'round';
+    pad.ctx.strokeStyle = '#111827';
+    if(prevData){
+      const img = new Image();
+      img.onload = ()=> pad.ctx.drawImage(img, 0, 0, rect.width, 200);
+      img.src = prevData;
+    }
+  }
+  pad.resize = resize;
+  resize();
+  window.addEventListener('resize', resize);
+  function getPt(e){
+    const rect = canvas.getBoundingClientRect();
+    const t = e.touches ? e.touches[0] : e;
+    return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+  }
+  function start(e){ e.preventDefault(); pad.drawing = true; pad.last = getPt(e); placeholder.style.display='none'; }
+  function move(e){
+    if(!pad.drawing) return;
+    e.preventDefault();
+    const pt = getPt(e);
+    pad.ctx.beginPath();
+    pad.ctx.moveTo(pad.last.x, pad.last.y);
+    pad.ctx.lineTo(pt.x, pt.y);
+    pad.ctx.stroke();
+    pad.last = pt;
+    pad.hasStroke = true;
+  }
+  function end(){ pad.drawing = false; }
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, { passive:false });
+  canvas.addEventListener('touchmove', move, { passive:false });
+  canvas.addEventListener('touchend', end);
+  sigPads[key] = pad;
+}
+function setupSignaturePad(){ createSigPad('customer'); createSigPad('tech'); }
+// เรียกตอนฟอร์มโชว์ เพื่อให้ canvas ได้ขนาดจริง (ตอน init ฟอร์มยังซ่อน rect=0)
+function resizeSigPads(){ Object.values(sigPads).forEach(p=>p.resize && p.resize()); }
+function clearSignature(key){
+  const pad = sigPads[key]; if(!pad || !pad.ctx) return;
+  const rect = pad.canvas.getBoundingClientRect();
+  pad.ctx.clearRect(0, 0, rect.width, 200);
+  pad.hasStroke = false;
+  document.getElementById('sig-placeholder-'+key).style.display = 'flex';
+}
+
+// ---------- รูปตรวจเช็ก (บีบอัด + อัปเข้า Cloudflare R2 เหมือน submit) ----------
+function compressImage(file, maxW=1100, quality=0.68){
+  return new Promise((resolve, reject)=>{
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = e => { img.src = e.target.result; };
+    reader.onerror = reject;
+    img.onload = ()=>{
+      let { width, height } = img;
+      if(width > maxW){ height = Math.round(height * maxW / width); width = maxW; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width; canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      canvas.toBlob(blob=>{
+        resolve({ blob, dataUrl: canvas.toDataURL('image/jpeg', quality), width, height });
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function renderCheckinThumbs(){
+  document.getElementById('th-checkin').innerHTML = checkinPhotos.map(p=>`
+    <div class="thumb">
+      ${p.dataUrl ? `<img src="${p.dataUrl}">` : ''}
+      ${p.status==='compressing' ? '<div class="pct">...</div>' : ''}
+      <button class="rm" type="button" onclick="removeCheckinPhoto('${p.id}')">×</button>
+    </div>`).join('');
+}
+function removeCheckinPhoto(id){ checkinPhotos = checkinPhotos.filter(p=>p.id!==id); renderCheckinThumbs(); }
+async function addCheckinPhotos(files){
+  const list = Array.from(files || []); // สำเนาเป็น array ก่อน กัน FileList ถูกล้างระหว่างอ่านแบบ async
+  for(const file of list){
+    if(!file.type.startsWith('image/')) continue;
+    const id = Date.now()+'-'+Math.random().toString(36).slice(2,7);
+    const entry = { id, file, dataUrl:null, status:'compressing', url:'' };
+    checkinPhotos.push(entry);
+    renderCheckinThumbs();
+    try{
+      const { blob, dataUrl, width, height } = await compressImage(file);
+      entry.blob = blob; entry.dataUrl = dataUrl; entry.width = width; entry.height = height; entry.status = 'ready';
+    }catch(e){ entry.status='error'; console.warn('compress failed', e); }
+    renderCheckinThumbs();
+  }
+}
+async function uploadCheckinPhoto(entry, index, jobId){
+  const fd = new FormData();
+  fd.append('file', entry.blob, `checkin_${index}.jpg`);
+  fd.append('job_id', jobId || 'checkin');
+  fd.append('category', 'checkin');
+  fd.append('token', '');
+  const res = await fetch(UPLOAD_ENDPOINT, { method:'POST', body:fd });
+  if(!res.ok) throw new Error('อัปโหลดรูปไม่สำเร็จ');
+  const data = await res.json();
+  const url = data.url || data.fileUrl || '';
+  if(!url) throw new Error('อัปโหลดรูปสำเร็จแต่ไม่ได้รับ URL');
+  return { url, storage: data.storage || 'external', width: entry.width||0, height: entry.height||0 };
+}
+async function mapWithConcurrency(items, limit, mapper){
+  const results = new Array(items.length);
+  let next = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async ()=>{
+    while(next < items.length){
+      const i = next++;
+      results[i] = await mapper(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
+// ---------- บันทึก ----------
+function eventId(){ return 'CHK-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2,8); }
+
+async function submitCheckin(){
+  if(!selectedTypes.size){ alert('กรุณาเลือกประเภทงานอย่างน้อย 1 ประเภท'); return; }
+  if(!document.getElementById('f-date-in').value || !document.getElementById('f-time-in').value){ alert('กรุณาระบุวันที่และเวลาเข้า'); return; }
+  const signerName = document.getElementById('f-signer-name').value.trim();
+  if(!signerName){ alert('กรุณากรอกชื่อผู้เซ็น (ลูกค้า/ผู้แจ้ง)'); document.getElementById('f-signer-name').focus(); return; }
+  if(!sigPads.customer?.hasStroke){ alert('กรุณาให้ลูกค้า/ผู้แจ้งเซ็นชื่อก่อนบันทึก'); return; }
+  const techName = document.getElementById('f-tech-name').value.trim();
+  if(!techName){ alert('กรุณากรอกชื่อช่าง'); document.getElementById('f-tech-name').focus(); return; }
+  if(!sigPads.tech?.hasStroke){ alert('กรุณาให้ช่างเซ็นชื่อก่อนบันทึก'); return; }
+
+  const jobId = manualMode ? (document.getElementById('m-job-id').value.trim() || '') : (jobRecord?.id || JOB_ID || '');
+  const client = manualMode ? document.getElementById('m-client').value.trim() : (jobRecord?.client || document.getElementById('j-client')?.textContent || '');
+  const branch = manualMode ? document.getElementById('m-branch').value.trim() : (jobRecord?.branch || document.getElementById('j-branch')?.textContent || '');
+  const reportedNote = manualMode ? document.getElementById('m-note').value.trim() : (jobRecord?.note || document.getElementById('j-note')?.textContent || '');
+
+  if(checkinPhotos.some(p=>p.status==='compressing')){ alert('กรุณารอรูปบีบอัดเสร็จก่อน'); return; }
+  if(!checkinPhotos.some(p=>p.status==='ready'&&(p.blob||p.url))){ alert('กรุณาถ่าย/อัปรูปตรวจเช็กอย่างน้อย 1 รูปก่อนบันทึก'); return; }
+
+  document.getElementById('overlay').classList.add('show');
+  // อัปเฉพาะรูปใหม่ขึ้น Cloudflare R2 ; รูปเดิม (existing) ใช้ url เดิม ไม่อัปซ้ำ
+  let photos = [];
+  try{
+    const readyAll = checkinPhotos.filter(p=>p.status==='ready'&&(p.blob||p.url));
+    const uploadTasks = [];
+    let order = 0;
+    for(const p of readyAll){
+      if(p.existing && p.url){ photos.push({ order:order++, url:p.url, width:p.width||0, height:p.height||0, storage:p.storage||'external' }); continue; }
+      uploadTasks.push({ order:order++, p });
+    }
+    let done = 0;
+    const total = uploadTasks.length;
+    const uploaded = await mapWithConcurrency(uploadTasks, CHECKIN_UPLOAD_CONCURRENCY, async ({ order, p }, index)=>{
+      document.querySelector('#overlay div:last-child').textContent = total ? `กำลังอัปรูป ${done+1}/${total}...` : '';
+      const up = await uploadCheckinPhoto(p, index, jobId);
+      done++;
+      document.querySelector('#overlay div:last-child').textContent = total ? `กำลังอัปรูป ${done}/${total}...` : '';
+      p.existing = true;
+      p.url = up.url;
+      p.dataUrl = up.url || p.dataUrl;
+      p.storage = up.storage;
+      return { order, url:up.url, width:up.width, height:up.height, storage:up.storage };
+    });
+    photos = [...photos, ...uploaded].sort((a,b)=>a.order-b.order);
+  }catch(e){
+    document.getElementById('overlay').classList.remove('show');
+    alert('อัปโหลดรูปไม่สำเร็จ: '+e.message+'\nลองใหม่อีกครั้ง หรือลบรูปที่มีปัญหาออก');
+    return;
+  }
+  document.querySelector('#overlay div:last-child').textContent = 'กำลังบันทึก...';
+
+  const doneToggled = document.getElementById('f-done-toggle').checked;
+  const row = {
+    id: existingCheckin?.id || eventId(), // มีของเดิม → บันทึกทับ record เดิม ไม่สร้างซ้ำ
+    job_id: jobId || null,
+    photos,
+    client_snapshot: client || null,
+    branch_snapshot: branch || null,
+    reported_note: reportedNote || null,
+    job_type: [...selectedTypes],
+    date_in: document.getElementById('f-date-in').value,
+    time_in: document.getElementById('f-time-in').value,
+    date_done: doneToggled ? (document.getElementById('f-date-done').value || null) : null,
+    time_done: doneToggled ? (document.getElementById('f-time-done').value || null) : null,
+    note: document.getElementById('f-note').value.trim() || null,
+    signer_name: signerName,
+    signer_role: document.getElementById('f-signer-role').value,
+    signature_data: document.getElementById('sig-canvas-customer').toDataURL('image/png'),
+    tech_name: techName,
+    tech_signature_data: document.getElementById('sig-canvas-tech').toDataURL('image/png'),
+    source: 'checkin_page'
+  };
+
+  try{
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/job_checkins?on_conflict=id`, {
+      method: 'POST',
+      headers: sbHeaders({ 'Prefer':'resolution=merge-duplicates,return=minimal' }),
+      body: JSON.stringify(row)
+    });
+    if(!r.ok) throw new Error(await r.text());
+    existingCheckin = row; // กันสร้างซ้ำถ้ากดบันทึกอีกครั้งในเซสชันเดียว
+    showDone(row);
+  }catch(e){
+    console.error('save checkin failed', e);
+    alert('บันทึกไม่สำเร็จ: ' + e.message + '\n\nหมายเหตุ: ถ้าเห็นข้อความเกี่ยวกับตาราง job_checkins ไม่พบ แปลว่ายังไม่ได้รัน migration checkin_phase6_table.txt');
+  }finally{
+    document.getElementById('overlay').classList.remove('show');
+  }
+}
+
+function showDone(row){
+  document.getElementById('state-form').classList.add('hidden');
+  document.getElementById('state-done').classList.remove('hidden');
+  const rows = [
+    ['PR', row.job_id || '—'],
+    ['ลูกค้า / สาขา', `${row.client_snapshot||'—'} / ${row.branch_snapshot||'—'}`],
+    ['ประเภทงาน', row.job_type.join(', ')],
+    ['เข้า', `${row.date_in} ${row.time_in}`],
+    ['เสร็จ', row.date_done ? `${row.date_done} ${row.time_done||''}` : 'ยังไม่เสร็จ'],
+    ['ลูกค้า/ผู้แจ้ง', `${row.signer_name} (${row.signer_role})`],
+    ['ช่างผู้เข้างาน', row.tech_name || '—'],
+    ['รูปตรวจเช็ก', `${(row.photos||[]).length} รูป`],
+  ];
+  document.getElementById('done-summary').innerHTML = rows.map(([k,v])=>`<div class="summary-row"><span class="k">${k}</span><span class="v">${v}</span></div>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>

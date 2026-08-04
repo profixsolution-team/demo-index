@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>แจ้งงานซ่อม — ProFix</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--bg:#f4f7fb;--card:#fff;--text:#17202c;--text2:#667085;--border:#d8e0ea;--blue:#175fff;--green:#159947;--red:#d92d20}
+  *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,"Noto Sans Thai",sans-serif;font-size:15px;line-height:1.45}
+  .wrap{width:min(760px,100%);margin:0 auto;padding:20px 14px 36px}.head{background:#111820;color:#fff;border-radius:14px;padding:18px;margin-bottom:14px}.brand{font-size:22px;font-weight:900}.sub{color:#c8d2df;font-size:13px;margin-top:4px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:0 8px 24px rgba(16,24,40,.06)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.fg{margin-bottom:12px}label{display:block;font-size:12px;font-weight:800;color:var(--text2);margin-bottom:6px}
+  input,select,textarea{width:100%;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text);padding:11px 12px;font:inherit}textarea{min-height:100px;resize:vertical}.req{color:var(--red)}
+  .btn{width:100%;height:48px;border:0;border-radius:12px;font-weight:900;cursor:pointer;background:var(--blue);color:#fff;font-size:16px}.btn:disabled{opacity:.55;cursor:not-allowed}.ghost{background:#eef3fb;color:#1d2939}
+  .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}.thumb{position:relative;aspect-ratio:1;background:#eef2f7;border:1px solid var(--border);border-radius:10px;overflow:hidden}.thumb img{width:100%;height:100%;object-fit:cover}.rm{position:absolute;right:4px;top:4px;border:0;border-radius:999px;background:rgba(0,0,0,.65);color:#fff;width:24px;height:24px}
+  .msg{display:none;text-align:center;padding:22px}.msg.show{display:block}.ok{color:var(--green);font-weight:900;font-size:20px}.mono{font-family:ui-monospace,Menlo,monospace}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}.thumbs{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="head"><div class="brand">ProFix Service Request</div><div class="sub">แจ้งงานซ่อม/บริการให้ทีม ProFix ตรวจรับและจัดคิว</div></header>
+  <div id="form-wrap">
+    <section class="card">
+      <div class="grid">
+        <div class="fg"><label>ชื่อลูกค้า / บริษัท <span class="req">*</span></label><input id="customer" placeholder="เช่น บริษัท ABC"></div>
+        <div class="fg"><label>สาขา / พื้นที่</label><input id="branch" placeholder="เช่น สาขาลาดพร้าว"></div>
+      </div>
+      <div class="grid">
+        <div class="fg"><label>ชื่อผู้ติดต่อ <span class="req">*</span></label><input id="contact" placeholder="ชื่อ-นามสกุล"></div>
+        <div class="fg"><label>เบอร์โทร <span class="req">*</span></label><input id="phone" inputmode="tel" placeholder="081-234-5678"></div>
+      </div>
+      <div class="fg"><label>อีเมล</label><input id="email" inputmode="email" placeholder="name@example.com"></div>
+    </section>
+    <section class="card">
+      <div class="grid">
+        <div class="fg"><label>ประเภทงาน</label><select id="job-type"><option>ตรวจเช็ก</option><option>ซ่อม</option><option>บำรุงรักษา (PM)</option><option>ติดตั้ง</option><option>เปลี่ยนอะไหล่</option><option>อื่นๆ</option></select></div>
+        <div class="fg"><label>ความเร่งด่วน</label><select id="priority"><option value="normal">ปกติ</option><option value="urgent">ด่วน</option><option value="critical">เร่งด่วนมาก</option></select></div>
+      </div>
+      <div class="grid">
+        <div class="fg"><label>วันที่สะดวก</label><input type="date" id="preferred-date"></div>
+        <div class="fg"><label>ช่วงเวลา</label><input id="preferred-time" placeholder="เช่น 10:00-12:00"></div>
+      </div>
+      <div class="fg"><label>สถานที่ / ที่อยู่</label><textarea id="location" placeholder="ระบุที่อยู่หรือจุดเข้าหน้างาน"></textarea></div>
+      <div class="fg"><label>รายละเอียดปัญหา <span class="req">*</span></label><textarea id="detail" placeholder="อาการเสีย / สิ่งที่ต้องการให้เข้าตรวจ / รายละเอียดเพิ่มเติม"></textarea></div>
+      <div class="fg"><label>รูปประกอบ</label><input type="file" id="photo-input" accept="image/*" multiple onchange="addPhotos(this.files);this.value='';"><div class="thumbs" id="thumbs"></div></div>
+    </section>
+    <button class="btn" id="submit-btn" onclick="submitRequest()">ส่งงานให้ ProFix</button>
+  </div>
+  <div class="card msg" id="done">
+    <div class="ok">ส่งงานเรียบร้อย</div>
+    <p>ทีม ProFix ได้รับรายการแจ้งงานแล้ว</p>
+    <div>เลขรับเรื่อง: <span class="mono" id="done-no"></span></div>
+    <button class="btn ghost" style="margin-top:16px" onclick="location.reload()">แจ้งงานเพิ่ม</button>
+  </div>
+</div>
+<script>
+const SUPABASE_URL='https://mghlmsckdvmdqrxtdfbi.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1naGxtc2NrZHZtZHFyeHRkZmJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTI1NDEsImV4cCI6MjEwMTM4ODU0MX0.ywWlKVOAG6m-rr7MhJaJzbRLNXJkO7AeC6sJJlV5FsY';
+const UPLOAD_ENDPOINT='https://profix-r2-upload-worker.profixsolution-team.workers.dev/upload';
+const CUSTOMER_EMAIL_ENDPOINT='https://mghlmsckdvmdqrxtdfbi.supabase.co/functions/v1/customer-request-email';
+const UPLOAD_CONCURRENCY=3;
+function sbHeaders(extra={}){return {'apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+SUPABASE_ANON_KEY,'Content-Type':'application/json',...extra};}
+let photos=[];
+function val(id){return document.getElementById(id).value.trim();}
+function eventId(){return 'CJR-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,8);}
+function requestNo(){const d=new Date();return `CR-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}-${Math.random().toString(36).slice(2,6).toUpperCase()}`;}
+function renderThumbs(){document.getElementById('thumbs').innerHTML=photos.map(p=>`<div class="thumb">${p.dataUrl?`<img src="${p.dataUrl}">`:''}<button class="rm" type="button" onclick="removePhoto('${p.id}')">×</button></div>`).join('');}
+function removePhoto(id){photos=photos.filter(p=>p.id!==id);renderThumbs();}
+function compressImage(file,maxW=1100,quality=.68){return new Promise((resolve,reject)=>{const img=new Image(),reader=new FileReader();reader.onload=e=>img.src=e.target.result;reader.onerror=reject;img.onload=()=>{let {width,height}=img;if(width>maxW){height=Math.round(height*maxW/width);width=maxW;}const c=document.createElement('canvas');c.width=width;c.height=height;c.getContext('2d').drawImage(img,0,0,width,height);c.toBlob(blob=>resolve({blob,dataUrl:c.toDataURL('image/jpeg',quality),width,height}),'image/jpeg',quality);};img.onerror=reject;reader.readAsDataURL(file);});}
+async function addPhotos(files){for(const file of Array.from(files||[])){if(!file.type.startsWith('image/'))continue;const entry={id:eventId(),status:'compressing'};photos.push(entry);renderThumbs();try{const c=await compressImage(file);Object.assign(entry,c,{status:'ready'});}catch(e){entry.status='error';console.warn(e);}renderThumbs();}}
+async function mapWithConcurrency(items,limit,mapper){const results=new Array(items.length);let next=0;const workers=Array.from({length:Math.min(limit,items.length)},async()=>{while(next<items.length){const i=next++;results[i]=await mapper(items[i],i);}});await Promise.all(workers);return results;}
+async function uploadPhoto(p,index,reqId){const fd=new FormData();fd.append('file',p.blob,`customer_request_${index}.jpg`);fd.append('job_id',reqId);fd.append('category','customer-request');fd.append('token','');const r=await fetch(UPLOAD_ENDPOINT,{method:'POST',body:fd});if(!r.ok)throw new Error('อัปโหลดรูปไม่สำเร็จ');const data=await r.json();const url=data.url||data.fileUrl||'';if(!url)throw new Error('ไม่ได้รับ URL รูป');return {url,storage:data.storage||'external',width:p.width||0,height:p.height||0};}
+function isMissingTableError(msg){return /PGRST205|schema cache|Could not find the table|does not exist|42P01/i.test(String(msg||''));}
+async function loadFallbackInbox(){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/app_state?key=eq.customer_job_requests_inbox&select=data`,{headers:sbHeaders()});
+  if(!r.ok)throw new Error(await r.text());
+  const rows=await r.json();
+  return rows?.[0]?.data || {requests:[]};
+}
+async function saveFallbackInbox(data){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/app_state`,{method:'POST',headers:sbHeaders({'Prefer':'resolution=merge-duplicates,return=minimal'}),body:JSON.stringify({key:'customer_job_requests_inbox',data,updated_at:new Date().toISOString()})});
+  if(!r.ok)throw new Error(await r.text());
+}
+async function saveCustomerRequest(row){
+  const r=await fetch(`${SUPABASE_URL}/rest/v1/customer_job_requests`,{method:'POST',headers:sbHeaders({'Prefer':'return=minimal'}),body:JSON.stringify(row)});
+  if(r.ok)return 'table';
+  const msg=await r.text();
+  if(!isMissingTableError(msg))throw new Error(msg);
+  const inbox=await loadFallbackInbox();
+  const requests=Array.isArray(inbox.requests)?inbox.requests:[];
+  requests.unshift({...row,_fallback:true});
+  await saveFallbackInbox({...inbox,requests,lastUpdatedAt:new Date().toISOString()});
+  return 'fallback';
+}
+async function patchCustomerRequestEmailStatus(row, storageMode, patch){
+  Object.assign(row, patch);
+  if(storageMode==='table'){
+    try{
+      const r=await fetch(`${SUPABASE_URL}/rest/v1/customer_job_requests?id=eq.${encodeURIComponent(row.id)}`,{method:'PATCH',headers:sbHeaders(),body:JSON.stringify(patch)});
+      if(!r.ok)console.warn('email status patch failed',await r.text());
+    }catch(e){console.warn('email status patch failed',e);}
+    return;
+  }
+  try{
+    const inbox=await loadFallbackInbox();
+    const requests=Array.isArray(inbox.requests)?inbox.requests:[];
+    const idx=requests.findIndex(x=>x.id===row.id);
+    if(idx>=0)requests[idx]={...requests[idx],...patch};
+    await saveFallbackInbox({...inbox,requests,lastUpdatedAt:new Date().toISOString()});
+  }catch(e){console.warn('fallback email status patch failed',e);}
+}
+async function notifyCustomerByEmail(row, storageMode){
+  if(!CUSTOMER_EMAIL_ENDPOINT){
+    await patchCustomerRequestEmailStatus(row,storageMode,{email_notice_status:row.contact_email?'pending':'none',email_notice_error:'email function endpoint not configured'});
+    return;
+  }
+  try{
+    const r=await fetch(CUSTOMER_EMAIL_ENDPOINT,{method:'POST',headers:sbHeaders(),body:JSON.stringify(row)});
+    if(!r.ok)throw new Error(await r.text());
+    await patchCustomerRequestEmailStatus(row,storageMode,{email_notice_status:row.contact_email?'sent':'none',email_notice_sent_at:new Date().toISOString(),email_notice_error:null});
+  }catch(e){
+    await patchCustomerRequestEmailStatus(row,storageMode,{email_notice_status:'failed',email_notice_error:String(e.message||e).slice(0,500)});
+  }
+}
+async function submitRequest(){
+  const required=[['customer','ชื่อลูกค้า/บริษัท'],['contact','ชื่อผู้ติดต่อ'],['phone','เบอร์โทร'],['detail','รายละเอียดปัญหา']];
+  for(const [id,label] of required){if(!val(id)){alert('กรุณากรอก '+label);document.getElementById(id).focus();return;}}
+  if(photos.some(p=>p.status==='compressing')){alert('กรุณารอรูปบีบอัดเสร็จก่อน');return;}
+  const btn=document.getElementById('submit-btn');btn.disabled=true;btn.textContent='กำลังส่ง...';
+  const id=eventId(), no=requestNo();
+  try{
+    const ready=photos.filter(p=>p.status==='ready'&&p.blob);
+    const uploaded=await mapWithConcurrency(ready,UPLOAD_CONCURRENCY,async(p,i)=>({order:i,...await uploadPhoto(p,i,id)}));
+    const row={id,request_no:no,customer_name:val('customer'),branch_name:val('branch')||null,contact_name:val('contact'),contact_phone:val('phone'),contact_email:val('email')||null,job_type:val('job-type')||null,priority:val('priority')||'normal',preferred_date:val('preferred-date')||null,preferred_time:val('preferred-time')||null,location_text:val('location')||null,problem_detail:val('detail'),photos:uploaded,email_notice_status:val('email')?'pending':'none',status:'new',source:'customer_request_page'};
+    const storageMode=await saveCustomerRequest(row);
+    notifyCustomerByEmail(row,storageMode);
+    document.getElementById('form-wrap').style.display='none';document.getElementById('done-no').textContent=no;document.getElementById('done').classList.add('show');
+  }catch(e){console.error(e);alert('ส่งงานไม่สำเร็จ กรุณาลองใหม่อีกครั้ง หรือติดต่อทีม ProFix');btn.disabled=false;btn.textContent='ส่งงานให้ ProFix';}
+}
+</script>
+</body>
+</html>
