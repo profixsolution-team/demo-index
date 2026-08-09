@@ -453,7 +453,7 @@ select option{background:var(--surface2);}
     <div class="login-logo">🔧 ProFix</div>
     <div class="login-title">เข้าสู่ระบบ</div>
     <div class="login-sub">Service Console — สำหรับทีมงานเท่านั้น</div>
-    <input id="login-user" type="email" autocomplete="email" placeholder="อีเมล" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <input id="login-user" type="text" autocomplete="username" placeholder="อีเมล หรือ Username" autocapitalize="off" autocorrect="off" spellcheck="false">
     <input id="login-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่าน">
     <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;">เข้าสู่ระบบ</button>
     <div id="login-msg" class="login-msg"></div>
@@ -1833,12 +1833,19 @@ async function doRecoverySubmit(ev){
 }
 async function doLoginSubmit(ev){
   ev.preventDefault();
-  const email=(document.getElementById('login-user').value||'').trim().toLowerCase();
+  const loginId=(document.getElementById('login-user').value||'').trim();
   const p=document.getElementById('login-pass').value||'';
   const msg=document.getElementById('login-msg');const btn=document.getElementById('login-btn');
-  if(!email||!p){msg.className='login-msg';msg.textContent='กรอกอีเมลและรหัสผ่าน';return false;}
+  if(!loginId||!p){msg.className='login-msg';msg.textContent='กรอกอีเมล/Username และรหัสผ่าน';return false;}
   btn.disabled=true;msg.className='login-msg';msg.textContent='กำลังตรวจสอบ...';
   try{
+    // รองรับล็อกอินด้วย username: ถ้าไม่มี "@" ถือเป็น username แล้วหา email จริงผ่าน RPC ก่อน
+    let email=loginId.toLowerCase();
+    if(!loginId.includes('@')){
+      const {data:foundEmail,error:luErr}=await sbClient.rpc('profix_email_for_username',{p_username:loginId});
+      if(luErr||!foundEmail){msg.className='login-msg';msg.textContent='Username หรือรหัสผ่านไม่ถูกต้อง';btn.disabled=false;return false;}
+      email=String(foundEmail).toLowerCase();
+    }
     const {data,error}=await sbClient.auth.signInWithPassword({email,password:p});
     if(error){
       const em=(error.message||'').toLowerCase();
