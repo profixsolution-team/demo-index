@@ -453,7 +453,7 @@ select option{background:var(--surface2);}
     <div class="login-logo">🔧 ProFix</div>
     <div class="login-title">เข้าสู่ระบบ</div>
     <div class="login-sub">Service Console — สำหรับทีมงานเท่านั้น</div>
-    <input id="login-user" type="text" autocomplete="username" placeholder="อีเมล หรือ Username" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <input id="login-user" type="email" autocomplete="email" placeholder="อีเมล" autocapitalize="off" autocorrect="off" spellcheck="false">
     <input id="login-pass" type="password" autocomplete="current-password" placeholder="รหัสผ่าน">
     <button type="submit" class="btn btn-primary" id="login-btn" style="width:100%;">เข้าสู่ระบบ</button>
     <div id="login-msg" class="login-msg"></div>
@@ -1428,14 +1428,27 @@ let J_ST = ['รอเปิดงาน','รอจัดช่าง','จั�
 let A_ST = ['รอดำเนินการ','กำลังทำ','รอลูกค้า','เสร็จแล้ว','ติดปัญหา','Reject'];
 const SB = {'รอเปิดงาน':'b-wait','รอจัดช่าง':'b-open','จัดช่างแล้ว':'b-assigned','ช่างออกงาน':'b-working','ช่างบันทึกร่าง':'b-working','ช่างส่งงานแล้ว':'b-done','รออนุมัติอะไหล่':'b-parts','รอช่างเข้าซ่อม':'b-open','แอดมินตรวจแล้ว':'b-done','ต้องแก้ไข':'b-reject','ปิดงานสำรวจ':'b-closed','รออะไหล่':'b-parts','เสร็จงาน':'b-done','รอจ่าย':'b-unpaid','ปิดงาน':'b-closed','ติดปัญหา':'b-hold','Reject':'b-reject','รอดำเนินการ':'b-open','กำลังทำ':'b-working','รอลูกค้า':'b-parts','เสร็จแล้ว':'b-done','รอขออนุมัติ':'b-urgent','รอช่างส่งงาน':'b-urgent'};
 
-let jobs = [];
+let jobs = [
+  {id:'PR-001',client:'บริษัท A',ref:'WO-2001',branch:'เซ็นทรัลลาดพร้าว',type:'ซ่อมแอร์',team:'ทีม A',date:'2025-06-03',status:'เสร็จงาน',pc:3500,pt:2400,partC:300,partR:500,fuel:150,note:'แอร์ไม่เย็น',report:'เติมน้ำยา R22 2 ปอนด์',isNew:false,pay:'unpaid'},
+  {id:'PR-002',client:'บริษัท A',ref:'WO-2002',branch:'เซ็นทรัลปิ่นเกล้า',type:'PM แอร์',team:'ทีม B',date:'2025-06-04',status:'ช่างออกงาน',pc:2000,pt:1400,partC:0,partR:0,fuel:200,note:'PM ไตรมาส',report:'',isNew:false,pay:'unpaid'},
+  {id:'PR-003',client:'บริษัท B',ref:'SV-5501',branch:'BigC รังสิต',type:'ซ่อมตู้แช่',team:'ทีม C',date:'2025-06-04',status:'รออะไหล่',pc:5000,pt:3200,partC:1800,partR:2500,fuel:300,note:'สั่งคอมเพรสเซอร์',report:'',isNew:false,pay:'unpaid'},
+  {id:'PR-004',client:'บริษัท A',ref:'WO-2003',branch:'เซ็นทรัลเวิลด์',type:'ติดตั้ง',team:'ทีม D',date:'2025-06-05',status:'รอเปิดงาน',pc:8000,pt:5500,partC:0,partR:0,fuel:0,note:'ติดตั้งแอร์ 2 ตัว',report:'',isNew:true,pay:'unpaid'},
+  {id:'PR-005',client:'บริษัท C',ref:'MNT-001',branch:'โลตัสบางนา',type:'PM ตู้แช่',team:'ทีม E',date:'2025-06-02',status:'ปิดงาน',pc:4500,pt:3000,partC:200,partR:350,fuel:250,note:'PM รอบ 2/3',report:'ตรวจเช็คระบบ ล้างคอยล์',isNew:false,pay:'paid'},
+  {id:'PR-006',client:'บริษัท B',ref:'SV-5502',branch:'BigC นวนคร',type:'ซ่อมแอร์',team:'ทีม F',date:'2025-06-01',status:'ปิดงาน',pc:2800,pt:1900,partC:600,partR:900,fuel:200,note:'',report:'เปลี่ยนแผงคอยล์',isNew:false,pay:'paid'},
+  {id:'PR-007',client:'บริษัท B',ref:'SV-5503',branch:'BigC ฟิวเจอร์',type:'ซ่อมตู้แช่',team:'ทีม G',date:'2025-06-05',status:'รอเปิดงาน',pc:3200,pt:2100,partC:0,partR:0,fuel:0,note:'',report:'',isNew:true,pay:'unpaid'},
+  {id:'PR-008',client:'บริษัท A',ref:'WO-2004',branch:'เซ็นทรัลบางนา',type:'ซ่อมแอร์',team:'ทีม H',date:'2025-06-06',status:'Reject',pc:1500,pt:0,partC:0,partR:0,fuel:0,note:'ลูกค้ายกเลิก',report:'',isNew:false,pay:'unpaid'},
+];
 
 let customerJobRequests=[], customerRequestFilter='new', customerRequestLoaded=false, customerRequestLoadingPromise=null;
 
-let adminTasks = [];
+let adminTasks = [
+  {id:'TASK-001',type:'ทำใบกำกับภาษี',client:'บริษัท C — โลตัสบางนา',detail:'ออก IV สำหรับ PR-005',assign:'แอดมิน 1',due:'2025-06-10',jobId:'PR-005',pri:'ด่วน',status:'รอดำเนินการ'},
+  {id:'TASK-002',type:'จัดซื้ออะไหล่',client:'BigC รังสิต',detail:'คอมเพรสเซอร์ตู้แช่ PR-003',assign:'แอดมิน 2',due:'2025-06-07',jobId:'PR-003',pri:'เร่งด่วนมาก',status:'กำลังทำ'},
+  {id:'TASK-003',type:'เปิดงานใหม่จากลูกค้า',client:'บริษัท A — WO-2003',detail:'ประสานงานวันนัดช่าง PR-004',assign:'แอดมิน 1',due:'2025-06-06',jobId:'PR-004',pri:'ปกติ',status:'รอดำเนินการ'},
+];
 
 let lpHistory=[], aiData=null, lpData=null;
-let jCnt=1, aCnt=1, jobFilter='ทั้งหมด', adminFilter='ทั้งหมด', finFilter='ทั้งหมด';
+let jCnt=9, aCnt=4, jobFilter='ทั้งหมด', adminFilter='ทั้งหมด', finFilter='ทั้งหมด';
 let adminDateFilter='', adminMonthFilter='', jobDateFilter='', jobMonthFilter='', adminRangeFilter='', jobRangeFilter='', rptRangeFilter='', docRangeFilter='';
 let adminSearch='', jobSearch='', jobTeamFilter='ทั้งหมด', calendarTeamFilter='ทั้งหมด', calendarMonthFilter='', calendarSearch='';
 let financeSearch='', financeDateFilter='', lastDataUpdatedAt='', adminSortDir='desc', jobSortDir='desc', rptSortDir='desc', docSortDir='desc', docSearch='', docDateFilter='', activeDocTab='qt';
@@ -1466,7 +1479,7 @@ let priorities=['ปกติ','ด่วน','เร่งด่วนมาก
 let payStatuses=['รอเก็บเงิน','เก็บแล้ว','เกินกำหนด'];
 let paymentMethods=['โอนเงิน','เงินสด','บัตรเครดิต','เช็ค','เครดิต 7 วัน','เครดิต 15 วัน','เครดิต 30 วัน'];
 let prValues=[];
-let fixedExpenses=[];
+let fixedExpenses=[{name:'ค่าเช่าสำนักงาน',type:'Fixed',amount:8000,date:'1 มิ.ย.',note:''},{name:'ค่า Internet + โทรศัพท์',type:'Fixed',amount:1500,date:'1 มิ.ย.',note:''}];
 let editClientIndex='', editTeamIndex='', editBranchIndex='', editSupplierIndex='', editPartIndex='';
 let listDraft=[];
 
@@ -1499,8 +1512,8 @@ function toggleMenu(id,e){
 document.addEventListener('click', closeMenus);
 
 // SUPABASE PERSISTENCE
-const SUPABASE_URL='https://mghlmsckdvmdqrxtdfbi.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1naGxtc2NrZHZtZHFyeHRkZmJpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU4MTI1NDEsImV4cCI6MjEwMTM4ODU0MX0.ywWlKVOAG6m-rr7MhJaJzbRLNXJkO7AeC6sJJlV5FsY';
+const SUPABASE_URL='https://cfikdkytopyqxvaytiks.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNmaWtka3l0b3B5cXh2YXl0aWtzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MjE1NDksImV4cCI6MjA5NjE5NzU0OX0.VptLL8BeQaNLyy25L_rHauVPnzVMCgVauicpgJIIuDQ';
 // Supabase Auth client (แชร์ session ผ่าน localStorage → แท็บ ?sales= ใช้ session เดิม ไม่ถามล็อกอินซ้ำ)
 const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth:{ persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:'implicit', storageKey:'svc_admin_tracker_sb_auth' }
@@ -1517,13 +1530,13 @@ const SPLIT_TABLES_ENABLED=true;
 // ตั้งเป็น Worker URL ของคุณ เช่น https://profix-r2-upload-worker.YOUR-SUBDOMAIN.workers.dev/upload-workorder
 const WORKORDER_UPLOAD_ENDPOINT='https://profix-r2-upload-worker.profixsolution-team.workers.dev/upload-workorder';
 const ACCOUNTING_UPLOAD_ENDPOINT='https://profix-r2-upload-worker.profixsolution-team.workers.dev/upload';
-const LS_UI_KEY='svc_admin_tracker_ui_v1-demo';
-const LS_THEME_KEY='svc_admin_tracker_theme-demo';
-const LS_FAST_STATE_KEY='svc_admin_tracker_fast_state_v4-demo';
-const LS_APP_VERSION_KEY='svc_admin_tracker_app_version-demo';
-const LS_AUTO_BACKUP_DATE_KEY='svc_admin_tracker_auto_backup_date-demo';
-const LS_ACTOR_NAME_KEY='svc_admin_tracker_actor_name-demo';
-const LS_DEVICE_ID_KEY='svc_admin_tracker_device_id-demo';
+const LS_UI_KEY='svc_admin_tracker_ui_v1';
+const LS_THEME_KEY='svc_admin_tracker_theme';
+const LS_FAST_STATE_KEY='svc_admin_tracker_fast_state_v4';
+const LS_APP_VERSION_KEY='svc_admin_tracker_app_version';
+const LS_AUTO_BACKUP_DATE_KEY='svc_admin_tracker_auto_backup_date';
+const LS_ACTOR_NAME_KEY='svc_admin_tracker_actor_name';
+const LS_DEVICE_ID_KEY='svc_admin_tracker_device_id';
 const todayISO=()=>new Date().toISOString().split('T')[0];
 const monthOf=v=>(v||'').slice(0,7);
 const dateLocalISO=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -1544,7 +1557,7 @@ function inQuickRange(item,range){const d=itemDateValue(item);if(range==='today'
 function sortByItemDate(arr,dir){return [...arr].sort((a,b)=>{const av=itemDateValue(a)||'';const bv=itemDateValue(b)||'';const c=av.localeCompare(bv)||(Number(a.createdAt||0)-Number(b.createdAt||0));return dir==='asc'?c:-c;});}
 function techUpdateTs(j){return Date.parse(j?.techUpdateAt||j?.technicianReport?.submittedAt||j?.techSubmittedAt||'')||0;}
 function hasTechUpdate(j){return !!(j&&j.techUpdateUnread&&techUpdateTs(j));}
-function jobForTask(t){return t?.jobId?liveJobs().find(j=>String(j.id)===String(t.jobId)):null;}
+function jobForTask(t){return t?.jobId?liveJobs().find(j=>sameJob(j.id,t.jobId)):null;}
 function taskHasTechUpdate(t){return !!(t?.techUpdateUnread||hasTechUpdate(jobForTask(t)));}
 function taskTechUpdateTs(t){return Date.parse(t?.techUpdateAt||'')||techUpdateTs(jobForTask(t));}
 function techUpdateTypeOf(item){
@@ -1665,12 +1678,12 @@ function bumpRecordModified(targetType,targetId){
   }catch(e){}
 }
 function markTechUpdateSeen(jobId,{save=true}={}){
-  const j=jobs.find(x=>String(x.id)===String(jobId));
+  const j=jobs.find(x=>sameJob(x.id,jobId));
   if(j){j.techUpdateUnread=false;j.techUpdateSeenAt=new Date().toISOString();}
-  adminTasks.forEach(t=>{if(String(t.jobId)===String(jobId)){t.techUpdateUnread=false;t.techUpdateSeenAt=new Date().toISOString();}});
+  adminTasks.forEach(t=>{if(sameJob(t.jobId,jobId)){t.techUpdateUnread=false;t.techUpdateSeenAt=new Date().toISOString();}});
   if(save)saveState();
 }
-function adminNeedsQueueBadge(t){return !t?.jobId||!liveJobs().some(j=>j.id===t.jobId);}
+function adminNeedsQueueBadge(t){return !t?.jobId||!liveJobs().some(j=>sameJob(j.id,t.jobId));}
 function isClosedAdminTask(t){return isDeletedRecord(t)||['เสร็จแล้ว','ปิดงาน','Reject'].includes(t?.status);}
 function isClosedJob(j){return isDeletedRecord(j)||['ปิดงาน','Reject','ปิดงานสำรวจ'].includes(j?.status);}
 function activeAdminCount(){return liveAdminTasks().filter(t=>!isClosedAdminTask(t)).length;}
@@ -1833,19 +1846,12 @@ async function doRecoverySubmit(ev){
 }
 async function doLoginSubmit(ev){
   ev.preventDefault();
-  const loginId=(document.getElementById('login-user').value||'').trim();
+  const email=(document.getElementById('login-user').value||'').trim().toLowerCase();
   const p=document.getElementById('login-pass').value||'';
   const msg=document.getElementById('login-msg');const btn=document.getElementById('login-btn');
-  if(!loginId||!p){msg.className='login-msg';msg.textContent='กรอกอีเมล/Username และรหัสผ่าน';return false;}
+  if(!email||!p){msg.className='login-msg';msg.textContent='กรอกอีเมลและรหัสผ่าน';return false;}
   btn.disabled=true;msg.className='login-msg';msg.textContent='กำลังตรวจสอบ...';
   try{
-    // รองรับล็อกอินด้วย username: ถ้าไม่มี "@" ถือเป็น username แล้วหา email จริงผ่าน RPC ก่อน
-    let email=loginId.toLowerCase();
-    if(!loginId.includes('@')){
-      const {data:foundEmail,error:luErr}=await sbClient.rpc('profix_email_for_username',{p_username:loginId});
-      if(luErr||!foundEmail){msg.className='login-msg';msg.textContent='Username หรือรหัสผ่านไม่ถูกต้อง';btn.disabled=false;return false;}
-      email=String(foundEmail).toLowerCase();
-    }
     const {data,error}=await sbClient.auth.signInWithPassword({email,password:p});
     if(error){
       const em=(error.message||'').toLowerCase();
@@ -3555,7 +3561,7 @@ function openAdminModal(){
   openM('m-admin');
 }
 async function saveAdminTask(openQueueAfter=false){
-  const data={type:document.getElementById('fa-type').value,client:document.getElementById('fa-client').value,phone:document.getElementById('fa-phone').value,detail:document.getElementById('fa-detail').value,assign:document.getElementById('fa-assign').value,due:document.getElementById('fa-due').value,jobId:document.getElementById('fa-job').value,pri:document.getElementById('fa-pri').value,status:document.getElementById('fa-status').value};
+  const data={type:document.getElementById('fa-type').value,client:document.getElementById('fa-client').value,phone:document.getElementById('fa-phone').value,detail:document.getElementById('fa-detail').value,assign:document.getElementById('fa-assign').value,due:document.getElementById('fa-due').value,jobId:canonPR(document.getElementById('fa-job').value),pri:document.getElementById('fa-pri').value,status:document.getElementById('fa-status').value};
   if(pendingAdminPdfFile&&!data.jobId){alert('อัปโหลดใบงานแล้ว กรุณาใส่ PR ก่อนบันทึก เพื่อให้ระบบเก็บไฟล์เข้าแฟ้ม PR');return;}
   const adminDup=duplicateAdminPRInfo(data.jobId,{excludeTaskId:editAdminId||''});
   if(adminDup){
@@ -3578,8 +3584,13 @@ async function saveAdminTask(openQueueAfter=false){
     // sync รายละเอียดที่แก้จาก Admin Tracker → job.note (ฟอร์มแจ้งเข้าซ่อม/checkin.html อ่าน job.note)
     // เขียนทับเฉพาะตอน note ของ job ยังว่างหรือยังตรงกับ detail เดิม — กันทับ note ที่แก้แยกไว้ในคิวช่าง
     if(data.jobId){
-      const lj=jobs.find(j=>!isDeletedRecord(j)&&(j.id===data.jobId||normalizePR(j.id)===normalizePR(data.jobId)));
-      if(lj&&(!lj.note||lj.note===(before?.detail||''))&&lj.note!==(data.detail||''))lj.note=data.detail||'';
+      const lj=jobs.find(j=>!isDeletedRecord(j)&&sameJob(j.id,data.jobId));
+      if(lj){
+        // รายละเอียด -> job.note (กันทับ note ที่แก้แยกไว้ในคิวช่าง)
+        if((!lj.note||lj.note===(before?.detail||''))&&lj.note!==(data.detail||''))lj.note=data.detail||'';
+        // ลูกค้า -> job.client (กันทับค่าที่แก้แยกไว้ในคิวช่าง)
+        if((!lj.client||lj.client===(before?.client||''))&&lj.client!==(data.client||''))lj.client=data.client||lj.client;
+      }
     }
   }else{
     taskId=nextAutoId('TASK',adminTasks);
@@ -3748,6 +3759,10 @@ function addAdminName(){
   }
 }
 function normalizePR(v){return String(v||'').trim().replace(/\s+/g,'').toUpperCase();}
+// canonPR = รูปแบบมาตรฐานที่จะ "เก็บ" (ตัดช่องว่างหน้า-หลัง-กลาง แต่คงตัวพิมพ์ตามที่ผู้ใช้กรอก)
+function canonPR(v){return String(v||'').trim().replace(/\s+/g,'');}
+// sameJob = เทียบว่าเป็นงานเดียวกันไหม แบบไม่สน space/ตัวพิมพ์ (กันเลขเพี้ยนเพราะเว้นวรรค)
+function sameJob(a,b){const x=normalizePR(a);return !!x&&x===normalizePR(b);}
 function duplicateAdminPRInfo(pr,{excludeTaskId=''}={}){
   const key=normalizePR(pr);
   if(!key)return null;
@@ -4062,7 +4077,7 @@ function confirmOverwriteIfConflict(label){
   return confirm(`⚠️ มีแอดมินอีกเครื่องเพิ่งแก้${label}นี้ไประหว่างที่คุณกำลังแก้อยู่\n\nกด "ตกลง" = เขียนทับด้วยข้อมูลของคุณ (ข้อมูลของอีกฝั่งจะหาย)\nกด "ยกเลิก" = หยุดก่อน แล้วปิดฟอร์มเพื่อรีเฟรชดูข้อมูลล่าสุด`);
 }
 async function saveJob(){if(!guardEdit())return;
-  const data={client:document.getElementById('fj-client').value,ref:document.getElementById('fj-ref').value||'N/A',branch:document.getElementById('fj-branch').value||'ไม่ระบุ',type:document.getElementById('fj-type').value,team:document.getElementById('fj-team').value,date:document.getElementById('fj-date').value,status:document.getElementById('fj-status').value,level:document.getElementById('fj-level')?.value||'',pc:parseFloat(document.getElementById('fj-pc').value)||0,pt:parseFloat(document.getElementById('fj-pt').value)||0,note:document.getElementById('fj-note').value};
+  const data={client:document.getElementById('fj-client').value,ref:canonPR(document.getElementById('fj-ref').value)||'N/A',branch:document.getElementById('fj-branch').value||'ไม่ระบุ',type:document.getElementById('fj-type').value,team:document.getElementById('fj-team').value,date:document.getElementById('fj-date').value,status:document.getElementById('fj-status').value,level:document.getElementById('fj-level')?.value||'',pc:parseFloat(document.getElementById('fj-pc').value)||0,pt:parseFloat(document.getElementById('fj-pt').value)||0,note:document.getElementById('fj-note').value};
   let savedJobId=editJobId;
   let before=null, after=null, action='create_job';
   if(editJobId){
@@ -4073,6 +4088,12 @@ async function saveJob(){if(!guardEdit())return;
     Object.assign(job,data);
     after=clonePlain(job);
     action='update_job';
+    // sync ย้อนกลับ: รายละเอียด/ลูกค้า ที่แก้ในคิวช่าง -> งานแอดมินที่ลิงก์กัน (กันทับค่าที่แก้แยกไว้)
+    liveAdminTasks().forEach(t=>{
+      if(!sameJob(t.jobId,job.id))return;
+      if((!t.detail||t.detail===(before?.note||''))&&t.detail!==(job.note||''))t.detail=job.note||t.detail;
+      if((!t.client||t.client===(before?.client||''))&&t.client!==(job.client||''))t.client=job.client||t.client;
+    });
   }else{
     const isAuto=!(data.ref&&data.ref!=='N/A');
     let id=isAuto?nextAutoId('PR',jobs):data.ref;
@@ -5174,7 +5195,8 @@ function salesDocImageUrl(v){return quoteImageUrl(v);}
 function salesCompanyProfiles(){
   const d=quoteCompanyDefaults();
   const defaults=[
-    {id:'profix',label:'บริษัทของคุณ (ตั้งค่าในเมนูตั้งค่า)',displayName:d.displayName,name:d.name,branch:d.branch,address:d.address,phone:d.phone,taxId:d.taxId,email:d.email,logoUrl:d.logoUrl,bankAccount:d.bankAccount},
+    {id:'profix',label:'ProFix Solution',displayName:d.displayName,name:d.name,branch:d.branch,address:d.address,phone:d.phone,taxId:d.taxId,email:d.email,logoUrl:d.logoUrl,bankAccount:d.bankAccount},
+    {id:'pt-accoolity',label:'บริษัท พีที แอคคูลิตี้ เซอร์วิสเซส จำกัด',displayName:'ProFix Solution',name:'บริษัท พีที แอคคูลิตี้ เซอร์วิสเซส จำกัด',branch:'สำนักงานใหญ่',address:'88/82 หมู่9 ต.คลองห้า อ.คลองหลวง จ.ปทุมธานี 12120',phone:'098-6266622',taxId:'0245557002535',email:'profixsolution.team@gmail.com',logoUrl:d.logoUrl,bankAccount:''},
   ];
   const saved=(salesCompanyProfileItems||[]).map(p=>({...p,label:p.label||p.displayName||p.name||'บริษัท'}));
   return [...defaults,...saved,{id:'custom',label:'กำหนดเอง / Custom'}];
@@ -6101,9 +6123,9 @@ async function mergeSalesDocsToTaxInvoice(){
   setAccountingStatus('sales',`รวม ${docs.length} ใบ (${jobIds.length} งาน) เรียบร้อย — ตรวจแล้วกดบันทึก`,'ok');
 }
 function salesInvoiceJobs(inv){return inv.job_ids?String(inv.job_ids).split(',').map(s=>s.trim()).filter(Boolean):(inv.job_id?[String(inv.job_id)]:[]);}
-function salesInvoiceMatchesJob(inv,jobId){return salesInvoiceJobs(inv).some(p=>String(p)===String(jobId));}
-function jobCosts(jobId){return jobCostItems.filter(x=>String(x.job_id)===String(jobId)&&x.status!=='cancelled');}
-function techPartsForJob(jobId){return technicianUsedParts.filter(x=>String(x.job_id)===String(jobId));}
+function salesInvoiceMatchesJob(inv,jobId){return salesInvoiceJobs(inv).some(p=>sameJob(p,jobId));}
+function jobCosts(jobId){return jobCostItems.filter(x=>sameJob(x.job_id,jobId)&&x.status!=='cancelled');}
+function techPartsForJob(jobId){return technicianUsedParts.filter(x=>sameJob(x.job_id,jobId));}
 function purchaseOptionsHtml(){
   const opts=['<option value="">ไม่เลือก</option>'];
   purchaseItems.filter(x=>x.status!=='cancelled').forEach(x=>{
@@ -6121,7 +6143,7 @@ function renderJobAccountingSection(jobId){
   const totalVat=costs.reduce((s,x)=>s+Number(x.vat_amount||0),0);
   const salesTotal=sales.reduce((s,x)=>s+Number(x.total_amount||0),0);
   const pending=techRows.filter(x=>x.matched_status==='pending').length;
-  const stockMoves=stockMovements.filter(m=>String(m.job_id)===String(jobId)&&m.status!=='cancelled');
+  const stockMoves=stockMovements.filter(m=>sameJob(m.job_id,jobId)&&m.status!=='cancelled');
   el.innerHTML=`<div class="table-wrap" style="margin-top:14px;">
     <div class="table-header"><div class="table-title">จับคู่อะไหล่และต้นทุน</div><span class="mono tm" style="font-size:11px;">ขาย ฿${money(salesTotal)} | ต้นทุนจริง ฿${money(totalCost)} | VAT ซื้อ ฿${money(totalVat)} | pending ${pending}</span></div>
     <div class="form-group"><label>บิลขาย / ภาษีขาย</label>${sales.length?`<table><thead><tr><th>เลขบิล</th><th>วันที่</th><th>ก่อน VAT</th><th>VAT</th><th>รวม</th><th>รับเงิน</th></tr></thead><tbody>${sales.map(s=>`<tr><td class="mono ta">${esc(s.sales_invoice_no)}</td><td>${esc(s.invoice_date||'-')}</td><td class="mono tr">฿${money(s.subtotal)}</td><td class="mono tr">฿${money(s.vat_amount)}</td><td class="mono tg">฿${money(s.total_amount)}</td><td><span class="badge ${s.payment_status==='paid'?'b-paid':'b-unpaid'}">${esc(s.payment_status||'unpaid')}</span></td></tr>`).join('')}</tbody></table>`:`<div class="text-box">ยังไม่มีบิลขายของ PR นี้<br><button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="openSalesForJob('${esc(jobId)}')">ออกบิลขาย</button></div>`}</div>
@@ -6469,7 +6491,7 @@ function fillSelects(){
   const jobOpts=jobs.map(j=>`<option value="${esc(j.id)}">${esc(j.id)} - ${esc(j.branch)}</option>`).join('');
   ['ai-job-sel','lp-job'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='<option value="">-- เลือก --</option>'+jobOpts;});
   const prList=document.getElementById('pr-list');if(prList)prList.innerHTML=prValues.map(v=>`<option value="${esc(v)}"></option>`).join('');
-  const clientOpts=(typeof clients!=='undefined'?clients.map(c=>c.name):[]).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
+  const clientOpts=(typeof clients!=='undefined'?clients.map(c=>c.name):['บริษัท A','บริษัท B','บริษัท C']).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
   ['fj-client','fp-client','fb-client','cl-filter','branch-cl-filter'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const all=(id==='cl-filter'||id==='branch-cl-filter')?'<option value="">ทุกลูกค้า</option>':'';const old=el.value;el.innerHTML=all+clientOpts;if([...el.options].some(o=>o.value===old))el.value=old;});
   const teamOpts=(typeof teams!=='undefined'?teams.map(t=>t.name):['ทีม A','ทีม B','ทีม C','ทีม D','ทีม E','ทีม F','ทีม G','ทีม H']).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');
   ['fj-team','lp-team','ftp-team','team-filter'].forEach(id=>{const el=document.getElementById(id);if(!el)return;const all=id==='team-filter'?'<option value="">ทุกทีม</option>':'';const old=el.value;el.innerHTML=all+teamOpts;if([...el.options].some(o=>o.value===old))el.value=old;});
@@ -6518,7 +6540,7 @@ function renderLPHist(){const tb=document.getElementById('lp-history');if(!tb)re
 function resetLP(){lpData=null;document.getElementById('lp-text').value='';document.getElementById('lp-res').style.display='none';}
 
 // DOCUMENTS
-let docs={qt:[],iv:[],workOrders:[]};
+let docs={qt:[{no:'QT-2025-001',jid:'PR-005',cl:'บริษัท C',amt:4850,date:'2025-06-02',st:'อนุมัติแล้ว'},{no:'QT-2025-002',jid:'PR-006',cl:'บริษัท B',amt:3700,date:'2025-06-01',st:'อนุมัติแล้ว'}],iv:[{no:'IV-2025-001',jid:'PR-005',cl:'บริษัท C',amt:4850,due:'2025-06-16',st:'ค้างชำระ'},{no:'IV-2025-002',jid:'PR-006',cl:'บริษัท B',amt:3700,due:'2025-06-16',st:'ค้างชำระ'}],workOrders:[]};
 let quoteEditNo=null;
 let quoteDraftRows=[];
 let workOrderPrFilter='';
@@ -6555,11 +6577,11 @@ function allWorkOrderPRs(){
 function workOrderBundle(pr){
   ensureDocsShape();
   return {
-    job:liveJobs().find(j=>j.id===pr),
-    admin:adminTasks.filter(t=>t.jobId===pr),
-    workDocs:docs.workOrders.filter(d=>d.pr===pr),
-    quotes:docs.qt.filter(d=>d.jid===pr),
-    invoices:docs.iv.filter(d=>d.jid===pr)
+    job:liveJobs().find(j=>sameJob(j.id,pr)),
+    admin:adminTasks.filter(t=>sameJob(t.jobId,pr)),
+    workDocs:docs.workOrders.filter(d=>sameJob(d.pr,pr)),
+    quotes:docs.qt.filter(d=>sameJob(d.jid,pr)),
+    invoices:docs.iv.filter(d=>sameJob(d.jid,pr))
   };
 }
 function selectWorkOrderPR(pr){const v=(pr||'').trim();if(!v){alert('กรุณาเลือก PR');return;}workOrderPrFilter=v;renderWorkOrders();saveUIState();}
@@ -6831,17 +6853,56 @@ document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click
 
 
 // ===== SETTINGS DATA =====
-let clients = [];
+let clients = [
+  {id:'CLT-001', name:'บริษัท A', contact:'คุณสมชาย', phone:'081-234-5678', payTerm:'จ่ายทุก 2 อาทิตย์', credit:200000, note:'ลูกค้าหลัก'},
+  {id:'CLT-002', name:'บริษัท B', contact:'คุณสมหญิง', phone:'082-345-6789', payTerm:'30 วัน', credit:150000, note:''},
+  {id:'CLT-003', name:'บริษัท C', contact:'คุณวิชัย', phone:'083-456-7890', payTerm:'จ่ายทุก 2 อาทิตย์', credit:100000, note:'สัญญา PM ประจำปี'},
+];
 
-let pricing = [];
+let pricing = [
+  {client:'บริษัท A', type:'ซ่อมแอร์', price:3500, note:''},
+  {client:'บริษัท A', type:'PM แอร์', price:2000, note:'รายไตรมาส'},
+  {client:'บริษัท A', type:'ติดตั้ง', price:8000, note:'ต่อเครื่อง'},
+  {client:'บริษัท B', type:'ซ่อมตู้แช่', price:5000, note:''},
+  {client:'บริษัท B', type:'ซ่อมแอร์', price:2800, note:''},
+  {client:'บริษัท C', type:'PM ตู้แช่', price:4500, note:'3 รอบ/ปี'},
+];
 
-let teams = [];
+let teams = [
+  {name:'ทีม A', lead:'นายสมศักดิ์ ใจดี', phone:'091-111-1111', skill:'แอร์ + ตู้แช่', note:'พื้นที่กรุงเทพฯ เหนือ'},
+  {name:'ทีม B', lead:'นายประสิทธิ์ มากมี', phone:'091-222-2222', skill:'แอร์', note:''},
+  {name:'ทีม C', lead:'นายวิเชียร แข็งแรง', phone:'091-333-3333', skill:'ตู้แช่', note:'เชี่ยวชาญคอมเพรสเซอร์'},
+  {name:'ทีม D', lead:'นายบุญมี สุขสันต์', phone:'091-444-4444', skill:'ติดตั้ง', note:''},
+  {name:'ทีม E', lead:'นายธนา รวยดี', phone:'091-555-5555', skill:'แอร์ + ตู้แช่', note:''},
+  {name:'ทีม F', lead:'นายชัย เก่งกาจ', phone:'091-666-6666', skill:'แอร์', note:''},
+  {name:'ทีม G', lead:'นายสุรชัย ดีใจ', phone:'091-777-7777', skill:'ตู้แช่', note:''},
+  {name:'ทีม H', lead:'นายอนันต์ สบายดี', phone:'091-888-8888', skill:'แอร์ + ตู้แช่', note:''},
+];
 
-let teamPricing = [];
+let teamPricing = [
+  {team:'ทีม A', type:'ซ่อมแอร์', price:2400, note:''},
+  {team:'ทีม A', type:'PM แอร์', price:1400, note:''},
+  {team:'ทีม B', type:'PM แอร์', price:1400, note:''},
+  {team:'ทีม C', type:'ซ่อมตู้แช่', price:3200, note:''},
+  {team:'ทีม D', type:'ติดตั้ง', price:5500, note:''},
+  {team:'ทีม E', type:'PM ตู้แช่', price:3000, note:''},
+  {team:'ทีม F', type:'ซ่อมแอร์', price:1900, note:''},
+];
 
-let branches = [];
+let branches = [
+  {id:'BRN-001', name:'เซ็นทรัลลาดพร้าว', client:'บริษัท A', mgr:'คุณนภา', phone:'02-111-1111', hours:'10:00-22:00', addr:'ลาดพร้าว กรุงเทพฯ'},
+  {id:'BRN-002', name:'เซ็นทรัลปิ่นเกล้า', client:'บริษัท A', mgr:'คุณวิภา', phone:'02-222-2222', hours:'10:00-22:00', addr:'ปิ่นเกล้า กรุงเทพฯ'},
+  {id:'BRN-003', name:'BigC รังสิต', client:'บริษัท B', mgr:'คุณสมพร', phone:'02-333-3333', hours:'08:00-22:00', addr:'รังสิต ปทุมธานี'},
+  {id:'BRN-004', name:'เซ็นทรัลเวิลด์', client:'บริษัท A', mgr:'คุณมาลี', phone:'02-444-4444', hours:'10:00-22:00', addr:'ราชประสงค์ กรุงเทพฯ'},
+  {id:'BRN-005', name:'โลตัสบางนา', client:'บริษัท C', mgr:'คุณพิมพ์', phone:'02-555-5555', hours:'08:00-22:00', addr:'บางนา กรุงเทพฯ'},
+  {id:'BRN-006', name:'BigC นวนคร', client:'บริษัท B', mgr:'คุณสุดา', phone:'02-666-6666', hours:'08:00-22:00', addr:'นวนคร ปทุมธานี'},
+];
 
-let suppliers = [];
+let suppliers = [
+  {name:'บ.ไทยอะไหล่แอร์', type:'อะไหล่แอร์', contact:'คุณชัยวัฒน์', phone:'081-999-0001', terms:'เงินสด', lead:'1 วัน', note:'ส่งด่วนได้'},
+  {name:'ร้านเย็นดีอะไหล่', type:'อะไหล่ตู้แช่', contact:'คุณสมบัติ', phone:'081-999-0002', terms:'เครดิต 7 วัน', lead:'1-2 วัน', note:'สต็อกคอมเพรสเซอร์เยอะ'},
+  {name:'บ.ยูนิเวอร์แซลพาร์ท', type:'อะไหล่ทั่วไป', contact:'คุณกิตติ', phone:'081-999-0003', terms:'เครดิต 15 วัน', lead:'2-3 วัน', note:''},
+];
 
 let parts = [];
 let selectedParts=new Set();
@@ -7119,7 +7180,7 @@ function syncAdminTasksFromReport(jobId,status,note='',update={}){
   const updateAt=update.updateAt||new Date().toISOString();
   const updateType=update.updateType||'';
   adminTasks.forEach(t=>{
-    if(t.jobId===jobId){
+    if(sameJob(t.jobId,jobId)){
       t.status=status;
       t.isNew=false;
       t.techUpdateUnread=markUnread;
@@ -7467,14 +7528,14 @@ function generatePhotoBillingReport(){
 }
 function quoteCompanyDefaults(){
   return {
-    displayName:'',
-    name:'',
-    branch:'',
-    address:'',
-    phone:'',
-    taxId:'',
-    email:'',
-    logoUrl:'',
+    displayName:'ProFix Solution',
+    name:'บริษัท โปรฟิกซ์ โซลูชั่น จำกัด',
+    branch:'สำนักงานใหญ่',
+    address:'88/82 หมู่9 ต.คลองห้า อ.คลองหลวง จ.ปทุมธานี 12120',
+    phone:'098-6266622',
+    taxId:'0245557002535',
+    email:'profixsolution.team@gmail.com',
+    logoUrl:new URL('assets/profix-logo-dark.svg',location.href).href,
     bankAccount:'',
   };
 }
